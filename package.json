@@ -1,0 +1,54 @@
+{
+  "name": "@ryanmorr/elementize",
+  "description": "A lightweight and functional wrapper for defining Web Components",
+  "version": "0.1.0",
+  "license": "Unlicense",
+  "author": "Ryan Morr",
+  "homepage": "https://github.com/ryanmorr/elementize",
+  "repository": "github:ryanmorr/elementize",
+  "bugs": "https://github.com/ryanmorr/elementize/issues",
+  "keywords": [
+    "web components",
+    "custom elements",
+    "functional",
+    "dom"
+  ],
+  "type": "module",
+  "main": "dist/cjs/elementize.js",
+  "module": "dist/esm/elementize.js",
+  "browser": "dist/umd/elementize.js",
+  "exports": {
+    ".": {
+      "browser": "./dist/umd/elementize.js",
+      "import": "./dist/esm/elementize.js",
+      "require": "./dist/cjs/elementize.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "lint": "eslint src/** test/specs/**",
+    "test": "karma start karma.config.cjs",
+    "build": "rollup -c"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.4.0",
+    "chai": "^4.3.7",
+    "eslint": "^8.33.0",
+    "karma": "^6.4.1",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^3.1.1",
+    "karma-mocha": "^2.0.1",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-rollup-preprocessor": "^7.0.8",
+    "karma-sinon": "^1.0.5",
+    "mocha": "^10.2.0",
+    "rollup": "^3.14.0",
+    "rollup-plugin-generate-package-json": "^3.2.0",
+    "sinon": "^15.0.1",
+    "terser": "^5.16.3"
+  }
+}
