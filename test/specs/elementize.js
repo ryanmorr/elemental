@@ -57,7 +57,6 @@ describe('elementize', () => {
 
         elementize(generateTagName(), (element, subscribe) => {
             subscribe('mount', spy);
-            return '<div>foo</div>';
         });
 
         const element = document.createElement(getTagName());
@@ -85,11 +84,11 @@ describe('elementize', () => {
         
         elementize(generateTagName(), (element, subscribe) => {
             subscribe('mount', spy1);
-            subscribe('mount', spy2);
-            return '<div>foo</div>';
         });
 
         const element = document.createElement(getTagName());
+
+        element.subscribe('mount', spy2);
 
         expect(spy1.callCount).to.equal(0);
         expect(spy2.callCount).to.equal(0);
@@ -119,12 +118,12 @@ describe('elementize', () => {
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), (element, subscribe) => {
-            subscribe('mount', spy1);
-            unsubscribe = subscribe('mount', spy2);
-            return '<div>foo</div>';
+            unsubscribe = subscribe('mount', spy1);
         });
 
         const element = document.createElement(getTagName());
+
+        element.subscribe('mount', spy2);
 
         document.body.appendChild(element);
 
@@ -138,8 +137,8 @@ describe('elementize', () => {
 
         container.appendChild(element);
 
-        expect(spy1.callCount).to.equal(2);
-        expect(spy2.callCount).to.equal(1);
+        expect(spy1.callCount).to.equal(1);
+        expect(spy2.callCount).to.equal(2);
 
         element.remove();
     });
@@ -149,7 +148,6 @@ describe('elementize', () => {
 
         elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy);
-            return '<div>foo</div>';
         });
 
         const element = document.createElement(getTagName());
@@ -175,11 +173,11 @@ describe('elementize', () => {
         
         elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy1);
-            subscribe('unmount', spy2);
-            return '<div>foo</div>';
         });
 
         const element = document.createElement(getTagName());
+
+        element.subscribe('unmount', spy2);
 
         document.body.appendChild(element);
 
@@ -206,11 +204,11 @@ describe('elementize', () => {
         
         elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy1);
-            unsubscribe = subscribe('unmount', spy2);
-            return '<div>foo</div>';
         });
 
         const element = document.createElement(getTagName());
+        
+        unsubscribe = element.subscribe('unmount', spy2);
 
         document.body.appendChild(element);
 
