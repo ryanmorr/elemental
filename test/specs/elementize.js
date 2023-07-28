@@ -88,6 +88,7 @@ describe('elementize', () => {
 
         const element = document.createElement(getTagName());
 
+        expect(element.subscribe).to.be.a('function');
         element.subscribe('mount', spy2);
 
         expect(spy1.callCount).to.equal(0);
@@ -241,6 +242,29 @@ describe('elementize', () => {
         const element2 = document.createElement(getTagName());
         expect(element2.foo).to.equal('bar');
         expect(element2.baz).to.equal(10);
+    });
+
+    it('should enumerate properties', () => {
+        elementize(generateTagName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
+
+        const element = document.createElement(getTagName());
+        
+        const props = Object.keys(element);
+
+        expect(props).to.include('foo');
+        expect(props).to.include('bar');
+        expect(props).to.include('baz');
+        expect(props).to.include('qux');
+    });
+
+    it('should be able to delete a property', () => {
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+
+        const element = document.createElement(getTagName());
+
+        delete element.foo;
+
+        expect(element.foo).to.equal(undefined);
     });
 
     it('should support prop event subscription', () => {
