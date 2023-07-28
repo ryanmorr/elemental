@@ -5,9 +5,27 @@ export default function elementize(name, props, callback) {
             super();
             this._subscribers = {
                 mount: [],
-                unmount: []
+                unmount: [],
+                prop: []
             };
-            Object.keys(props).forEach((prop) => this[prop] = props[prop]);
+            Object.keys(props).forEach((prop) => {
+                let value = props[prop];
+                Object.defineProperty(this, prop, {
+                    get() {
+                        return value;
+                    },
+                    set(newVal) {
+                        const oldVal = value;
+                        value = newVal;
+                        const subscribers = this._subscribers.prop;
+                        if (subscribers) {
+                            subscribers.slice().forEach((callback) => callback(prop, newVal, oldVal));
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+            });
             const shadow = this.attachShadow({mode: 'open'});
             const result = callback.call(this, this, this.subscribe.bind(this));
             if (result) {
