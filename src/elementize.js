@@ -1,11 +1,13 @@
-export default function elementize(name, callback) {
+export default function elementize(name, props, callback) {
     class CustomElement extends HTMLElement {
+
         constructor() {
             super();
             this._subscribers = {
                 mount: [],
                 unmount: []
             };
+            Object.keys(props).forEach((prop) => this[prop] = props[prop]);
             const shadow = this.attachShadow({mode: 'open'});
             const result = callback.call(this, this, this.subscribe.bind(this));
             if (result) {
@@ -45,7 +47,7 @@ export default function elementize(name, callback) {
             }
         }
     }
-
+    
     customElements.define(name, CustomElement);
     return CustomElement;
 }
