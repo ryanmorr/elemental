@@ -8,6 +8,8 @@
   "repository": "github:ryanmorr/elementize",
   "bugs": "https://github.com/ryanmorr/elementize/issues",
   "keywords": [
+    "javascript",
+    "ui",
     "web components",
     "custom elements",
     "functional",
