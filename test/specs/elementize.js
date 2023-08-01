@@ -230,9 +230,9 @@ describe('elementize', () => {
     });
 
     it('should support properties definition', () => {
-        elementize(generateTagName(), {foo: 'bar', baz: 10}, function() {
-            expect(this.foo).to.equal('bar');
-            expect(this.baz).to.equal(10);
+        elementize(generateTagName(), {foo: 'bar', baz: 10}, (element) => {
+            expect(element.foo).to.equal('bar');
+            expect(element.baz).to.equal(10);
         });
 
         const element1 = document.createElement(getTagName());
