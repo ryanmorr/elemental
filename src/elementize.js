@@ -5,21 +5,12 @@ export default function elementize(name, props, callback) {
 
         constructor() {
             super();
+            this._initialized = false;
             this._subscribers = {
                 mount: [],
                 unmount: [],
                 prop: []
             };
-            initializeProps(this, props);
-            const shadow = this.attachShadow({mode: 'open'});
-            const result = callback.call(this, this, this.subscribe.bind(this));
-            if (result) {
-                if (typeof result === 'string') {
-                    shadow.innerHTML = result;
-                } else {
-                    shadow.appendChild(result);
-                }
-            }
         }
 
         subscribe(name, callback) {
@@ -36,6 +27,19 @@ export default function elementize(name, props, callback) {
         }
 
         connectedCallback() {
+            if (!this._initialized) {
+                this._initialized = true;
+                initializeProps(this, props);
+                const shadow = this.attachShadow({mode: 'open'});
+                const result = callback.call(this, this, this.subscribe.bind(this));
+                if (result) {
+                    if (typeof result === 'string') {
+                        shadow.innerHTML = result;
+                    } else {
+                        shadow.appendChild(result);
+                    }
+                }
+            }
             const subscribers = this._subscribers.mount;
             if (subscribers) {
                 const parent = this.parentElement;

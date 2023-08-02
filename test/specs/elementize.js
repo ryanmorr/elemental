@@ -2,91 +2,112 @@ import elementize from '../../src/elementize';
 
 describe('elementize', () => {
     let index = 0;
-    const generateTagName = () => `test-element-${++index}`;
-    const getTagName = () => `test-element-${index}`;
-
+    const elements = [];
     const container = document.createElement('div');
     document.body.appendChild(container);
 
-    it('should register and create a custom element', () => {
-        const callback = sinon.spy(function() {
-            return document.createTextNode('foo');
-        });
+    const generateTestName = () => `test-element-${++index}`;
+    const getTestName = () => `test-element-${index}`;
+    const createTestElement = () => {
+        const element = document.createElement(getTestName());
+        elements.push(element);
+        return element;
+    };
 
-        const CustomElement = elementize(generateTagName(), {}, callback);
+    afterEach(() => {
+        while (elements.length > 0) {
+            const element = elements.pop();
+            if (element && element.parentNode) {
+                element.remove();
+            }
+        }
+    });
+
+    it('should register and create a custom element', () => {
+        const callback = sinon.spy();
+
+        const CustomElement = elementize(generateTestName(), {}, callback);
 
         expect(CustomElement).to.be.a('function');
         expect(callback.callCount).to.equal(0);
 
-        const constructor = customElements.get(getTagName());
+        const constructor = customElements.get(getTestName());
         expect(constructor).to.exist;
         expect(constructor).to.equal(CustomElement);
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+
+        expect(callback.callCount).to.equal(0);
+
+        container.appendChild(element);
 
         expect(callback.callCount).to.equal(1);
         expect(callback.args[0][0]).to.equal(element);
         expect(callback.calledOn(element)).to.equal(true);
 
         expect(element.nodeType).to.equal(1);
-        expect(element.localName).to.equal(getTagName());
-        expect(element.shadowRoot.textContent).to.equal('foo');
+        expect(element.localName).to.equal(getTestName());
         expect(element).to.be.an.instanceof(CustomElement);
         expect(element).to.be.an.instanceof(HTMLElement);
     });
 
-    it('should support shadow content as an HTML string', () => {
-        elementize(generateTagName(), {}, () => {
+    it('should support returning shadow content as a DOM node', () => {
+        elementize(generateTestName(), {}, () => {
+            return document.createTextNode('foo');
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(element.shadowRoot.innerHTML).to.equal('foo');
+    });
+
+    it('should support returning shadow content as an HTML string', () => {
+        elementize(generateTestName(), {}, () => {
             return '<div>foo</div>';
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+
+        container.appendChild(element);
+
         expect(element.shadowRoot.innerHTML).to.equal('<div>foo</div>');
-    });
-
-    it('should support not returning shadow content', () => {
-        const spy = sinon.spy();
-        elementize(generateTagName(), {}, spy);
-
-        const element = document.createElement(getTagName());
-        expect(element.shadowRoot.innerHTML).to.equal('');
     });
 
     it('should support mount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             subscribe('mount', spy);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
 
         expect(spy.callCount).to.equal(0);
 
-        document.body.appendChild(element);
-
-        expect(spy.callCount).to.equal(1);
-        expect(spy.args[0][0]).to.equal(document.body);
-
-        element.remove();
-
         container.appendChild(element);
 
-        expect(spy.callCount).to.equal(2);
-        expect(spy.args[1][0]).to.equal(container);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal(container);
 
         element.remove();
+
+        document.body.appendChild(element);
+
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal(document.body);
     });
 
     it('should support multiple mount event subscriptions', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             subscribe('mount', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
 
         expect(element.subscribe).to.be.a('function');
         element.subscribe('mount', spy2);
@@ -94,23 +115,21 @@ describe('elementize', () => {
         expect(spy1.callCount).to.equal(0);
         expect(spy2.callCount).to.equal(0);
 
-        document.body.appendChild(element);
-
-        expect(spy1.callCount).to.equal(1);
-        expect(spy1.args[0][0]).to.equal(document.body);
-        expect(spy2.callCount).to.equal(1);
-        expect(spy2.args[0][0]).to.equal(document.body);
-
-        element.remove();
-
         container.appendChild(element);
 
-        expect(spy1.callCount).to.equal(2);
-        expect(spy1.args[1][0]).to.equal(container);
-        expect(spy2.callCount).to.equal(2);
-        expect(spy2.args[1][0]).to.equal(container);
+        expect(spy1.callCount).to.equal(1);
+        expect(spy1.args[0][0]).to.equal(container);
+        expect(spy2.callCount).to.equal(1);
+        expect(spy2.args[0][0]).to.equal(container);
 
         element.remove();
+
+        document.body.appendChild(element);
+
+        expect(spy1.callCount).to.equal(2);
+        expect(spy1.args[1][0]).to.equal(document.body);
+        expect(spy2.callCount).to.equal(2);
+        expect(spy2.args[1][0]).to.equal(document.body);
     });
 
     it('should support unsubscribing from a mount event subscription', () => {
@@ -118,11 +137,11 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             unsubscribe = subscribe('mount', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
 
         element.subscribe('mount', spy2);
 
@@ -140,18 +159,16 @@ describe('elementize', () => {
 
         expect(spy1.callCount).to.equal(1);
         expect(spy2.callCount).to.equal(2);
-
-        element.remove();
     });
 
     it('should support unmount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             subscribe('unmount', spy);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
 
         document.body.appendChild(element);
 
@@ -172,11 +189,11 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
 
         element.subscribe('unmount', spy2);
 
@@ -203,11 +220,11 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), {}, (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
         
         unsubscribe = element.subscribe('unmount', spy2);
 
@@ -230,24 +247,37 @@ describe('elementize', () => {
     });
 
     it('should support properties definition', () => {
-        elementize(generateTagName(), {foo: 'bar', baz: 10}, (element) => {
+        elementize(generateTestName(), {foo: 'bar', baz: 10}, (element) => {
             expect(element.foo).to.equal('bar');
             expect(element.baz).to.equal(10);
         });
 
-        const element1 = document.createElement(getTagName());
+        const element1 = createTestElement();
+
+        expect(element1.foo).to.equal(undefined);
+        expect(element1.baz).to.equal(undefined);
+
+        container.appendChild(element1);
+
         expect(element1.foo).to.equal('bar');
         expect(element1.baz).to.equal(10);
 
-        const element2 = document.createElement(getTagName());
+        const element2 = createTestElement();
+
+        expect(element2.foo).to.equal(undefined);
+        expect(element2.baz).to.equal(undefined);
+
+        container.appendChild(element2);
+
         expect(element2.foo).to.equal('bar');
         expect(element2.baz).to.equal(10);
     });
 
     it('should enumerate properties', () => {
-        elementize(generateTagName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
+        elementize(generateTestName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+        container.appendChild(element);
         
         const props = Object.keys(element);
 
@@ -258,9 +288,10 @@ describe('elementize', () => {
     });
 
     it('should be able to delete a property', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+        container.appendChild(element);
 
         delete element.foo;
 
@@ -270,11 +301,12 @@ describe('elementize', () => {
     it('should support prop event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+        container.appendChild(element);
 
         expect(spy.callCount).to.equal(0);
 
@@ -299,11 +331,12 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+        container.appendChild(element);
 
         element.subscribe('prop', spy2);
 
@@ -340,11 +373,12 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy1);
         });
 
-        const element = document.createElement(getTagName());
+        const element = createTestElement();
+        container.appendChild(element);
         
         unsubscribe = element.subscribe('prop', spy2);
 
