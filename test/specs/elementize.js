@@ -24,12 +24,12 @@ describe('elementize', () => {
     });
 
     it('should register and create a custom element', () => {
-        const callback = sinon.spy();
+        const spy = sinon.spy();
 
-        const CustomElement = elementize(generateTestName(), {}, callback);
+        const CustomElement = elementize(generateTestName(), {}, spy);
 
         expect(CustomElement).to.be.a('function');
-        expect(callback.callCount).to.equal(0);
+        expect(spy.callCount).to.equal(0);
 
         const constructor = customElements.get(getTestName());
         expect(constructor).to.exist;
@@ -37,18 +37,38 @@ describe('elementize', () => {
 
         const element = createTestElement();
 
-        expect(callback.callCount).to.equal(0);
+        expect(spy.callCount).to.equal(0);
 
         container.appendChild(element);
 
-        expect(callback.callCount).to.equal(1);
-        expect(callback.args[0][0]).to.equal(element);
-        expect(callback.calledOn(element)).to.equal(true);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal(element);
+        expect(spy.calledOn(element)).to.equal(true);
 
         expect(element.nodeType).to.equal(1);
         expect(element.localName).to.equal(getTestName());
         expect(element).to.be.an.instanceof(CustomElement);
         expect(element).to.be.an.instanceof(HTMLElement);
+    });
+
+    it('should not invoke the initialization function twice', () => {
+        const spy = sinon.spy();
+
+        elementize(generateTestName(), {}, spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(spy.callCount).to.equal(1);
+
+        element.remove();
+
+        document.body.appendChild(element);
+
+        expect(spy.callCount).to.equal(1);
     });
 
     it('should support returning shadow content as a DOM node', () => {
