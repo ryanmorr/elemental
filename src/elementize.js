@@ -1,7 +1,7 @@
 import { initializeProps } from './utils';
 
-export default function elementize(name, props, callback) {
-    class CustomElement extends HTMLElement {
+function createComponent(props, callback) {
+    return class extends HTMLElement {
 
         constructor() {
             super();
@@ -54,7 +54,10 @@ export default function elementize(name, props, callback) {
             }
         }
     }
-    
-    customElements.define(name, CustomElement);
-    return CustomElement;
+}
+
+export default function elementize(name, props, callback) {
+    const Component = createComponent(props, callback);    
+    customElements.define(name, Component);
+    return Component;
 }
