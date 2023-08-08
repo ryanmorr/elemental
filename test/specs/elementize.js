@@ -426,4 +426,51 @@ describe('elementize', () => {
 
         expect(spy2.callCount).to.equal(1);
     });
+
+    it('should automatically reflect properties to attributes', () => {
+        elementize(generateTestName(), {foo: 'bar', baz: 10}, (element) => {
+            expect(element.getAttribute('foo')).to.equal('bar');
+            expect(element.getAttribute('baz')).to.equal('10');
+        });
+    
+        const element = createTestElement();
+    
+        expect(element.getAttribute('foo')).to.equal(null);
+        expect(element.getAttribute('baz')).to.equal(null);
+
+        container.appendChild(element);
+        
+        expect(element.getAttribute('foo')).to.equal('bar');
+        expect(element.getAttribute('baz')).to.equal('10');
+    
+        element.foo = 'qux';
+        expect(element.getAttribute('foo')).to.equal('qux');
+    });
+
+    it('should override default property value if attribute exists', () => {
+        elementize(generateTestName(), {foo: 'bar'}, (element) => {
+            expect(element.foo).to.equal('baz');
+            expect(element.getAttribute('foo')).to.equal('baz');
+        });
+    
+        container.innerHTML = `<${getTestName()} foo="baz"></${getTestName()}>`;
+        const element = container.firstChild;
+        
+        expect(element.foo).to.equal('baz');
+        expect(element.getAttribute('foo')).to.equal('baz');
+    });
+
+    it('should convert a camel-cased property name into a kebab-case attribute name', () => {
+        elementize(generateTestName(), {fooBarBaz: 'a'}, (element) => {
+            expect(element.getAttribute('foo-bar-baz')).to.equal('a');
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+        
+        expect(element.getAttribute('foo-bar-baz')).to.equal('a');
+    
+        element.fooBarBaz = 'b';
+        expect(element.getAttribute('foo-bar-baz')).to.equal('b');
+    });
 });

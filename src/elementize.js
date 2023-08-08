@@ -1,4 +1,4 @@
-import { initializeProps } from './utils';
+import { initializeProps, toAttribute, toProp } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -28,7 +28,6 @@ function createComponent(props, callback) {
 
         connectedCallback() {
             if (!this._initialized) {
-                this._initialized = true;
                 initializeProps(this, props);
                 const shadow = this.attachShadow({mode: 'open'});
                 const result = callback.call(this, this, this.subscribe.bind(this));
@@ -39,6 +38,7 @@ function createComponent(props, callback) {
                         shadow.appendChild(result);
                     }
                 }
+                this._initialized = true;
             }
             const subscribers = this._subscribers.mount;
             if (subscribers) {
