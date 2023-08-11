@@ -63,6 +63,9 @@ function createComponent(props, callback) {
             if (!this._initialized) {
                 return;
             }
+            if (oldVal === newVal) {
+                return;
+            }
             const subscribers = this._subscribers.attr;
             if (subscribers) {
                 subscribers.slice().forEach((callback) => callback(name, newVal, oldVal));

@@ -489,6 +489,26 @@ describe('elementize', () => {
         expect(spy2.callCount).to.equal(1);
     });
 
+    it('should not dispatch prop event if the value is the same', () => {
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        element.foo = 'baz';
+
+        expect(spy.callCount).to.equal(1);
+
+        element.foo = 'baz';
+
+        expect(spy.callCount).to.equal(1);
+    });
+
     it('should support attr event subscription', () => {
         const spy = sinon.spy();
     
@@ -596,5 +616,25 @@ describe('elementize', () => {
         expect(spy1.args[1][2]).to.equal('baz');
     
         expect(spy2.callCount).to.equal(1);
+    });
+
+    it('should not dispatch attr event if the value is the same', () => {
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('attr', spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', 'baz');
+
+        expect(spy.callCount).to.equal(1);
+
+        element.setAttribute('foo', 'baz');
+
+        expect(spy.callCount).to.equal(1);
     });
 });
