@@ -1,4 +1,4 @@
-import { initializeProps, toAttribute } from './utils';
+import { initializeProps, toAttribute, getCallback } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -19,6 +19,11 @@ function createComponent(props, callback) {
         }
 
         subscribe(name, callback) {
+            if (name.includes(':')) {
+                const parts = name.split(':');
+                name = parts[0];
+                callback = getCallback(parts[1], callback);
+            }
             const subscribers = this._subscribers[name];
             if (subscribers) {
                 subscribers.push(callback);
@@ -71,7 +76,7 @@ function createComponent(props, callback) {
                 subscribers.slice().forEach((callback) => callback(name, newVal, oldVal));
             }
         }
-    }
+    };
 }
 
 export default function elementize(name, props, callback) {

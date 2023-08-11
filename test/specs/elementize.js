@@ -22,7 +22,7 @@ describe('elementize', () => {
         const element = div.firstChild;
         elements.push(element);
         return element;
-    }
+    };
 
     afterEach(() => {
         while (elements.length > 0) {
@@ -509,6 +509,35 @@ describe('elementize', () => {
         expect(spy.callCount).to.equal(1);
     });
 
+    it('should support specific prop event subscription', () => {
+        elementize(generateTestName(), {foo: 'a', bar: 1}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const fooSpy = sinon.spy();
+        const barSpy = sinon.spy();
+        element.subscribe('prop:foo', fooSpy);
+        element.subscribe('prop:bar', barSpy);
+
+        expect(fooSpy.callCount).to.equal(0);
+        expect(barSpy.callCount).to.equal(0);
+
+        element.foo = 'b';
+
+        expect(fooSpy.callCount).to.equal(1);
+        expect(fooSpy.args[0][0]).to.equal('b');
+        expect(fooSpy.args[0][1]).to.equal('a');
+        expect(barSpy.callCount).to.equal(0);
+
+        element.bar = 2;
+
+        expect(barSpy.callCount).to.equal(1);
+        expect(barSpy.args[0][0]).to.equal(2);
+        expect(barSpy.args[0][1]).to.equal(1);
+        expect(fooSpy.callCount).to.equal(1);
+    });
+
     it('should support attr event subscription', () => {
         const spy = sinon.spy();
     
@@ -636,5 +665,34 @@ describe('elementize', () => {
         element.setAttribute('foo', 'baz');
 
         expect(spy.callCount).to.equal(1);
+    });
+
+    it('should support specific prop event subscription', () => {
+        elementize(generateTestName(), {foo: 'a', bar: '1'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const fooSpy = sinon.spy();
+        const barSpy = sinon.spy();
+        element.subscribe('attr:foo', fooSpy);
+        element.subscribe('attr:bar', barSpy);
+
+        expect(fooSpy.callCount).to.equal(0);
+        expect(barSpy.callCount).to.equal(0);
+
+        element.setAttribute('foo', 'b');
+
+        expect(fooSpy.callCount).to.equal(1);
+        expect(fooSpy.args[0][0]).to.equal('b');
+        expect(fooSpy.args[0][1]).to.equal('a');
+        expect(barSpy.callCount).to.equal(0);
+
+        element.setAttribute('bar', '2');
+
+        expect(barSpy.callCount).to.equal(1);
+        expect(barSpy.args[0][0]).to.equal('2');
+        expect(barSpy.args[0][1]).to.equal('1');
+        expect(fooSpy.callCount).to.equal(1);
     });
 });

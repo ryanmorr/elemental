@@ -4,6 +4,14 @@ export function toAttribute(propName) {
     return propName.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
 }
 
+export function getCallback(name, callback) {
+    return (key, newVal, oldVal) => {
+        if (key === name) {
+            callback(newVal, oldVal);
+        }
+    };
+}
+
 export function initializeProps(element, props) {
     Object.keys(props).forEach((prop) => {
         let value = props[prop];
