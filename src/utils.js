@@ -21,7 +21,6 @@ export function initializeProps(element, props) {
             set(newVal) {
                 const oldVal = value;
                 value = newVal;
-                element.setAttribute(attr, value);
                 const subscribers = element._subscribers.prop;
                 if (subscribers) {
                     subscribers.slice().forEach((callback) => callback(prop, newVal, oldVal));

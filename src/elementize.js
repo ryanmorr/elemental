@@ -1,4 +1,4 @@
-import { initializeProps, toAttribute, toProp } from './utils';
+import { initializeProps } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -9,7 +9,8 @@ function createComponent(props, callback) {
             this._subscribers = {
                 mount: [],
                 unmount: [],
-                prop: []
+                prop: [],
+                attr: []
             };
         }
 
