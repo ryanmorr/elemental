@@ -1,6 +1,6 @@
 const PROP_TO_ATTR_RE = /\.?([A-Z]+)/g;
 
-function toAttribute(propName) {
+export function toAttribute(propName) {
     return propName.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
 }
 

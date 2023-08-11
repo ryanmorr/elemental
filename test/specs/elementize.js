@@ -488,4 +488,113 @@ describe('elementize', () => {
 
         expect(spy2.callCount).to.equal(1);
     });
+
+    it('should support attr event subscription', () => {
+        const spy = sinon.spy();
+    
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+            subscribe('attr', spy);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(spy.callCount).to.equal(0);
+    
+        element.setAttribute('foo', 'baz');
+    
+        expect(element.getAttribute('foo')).to.equal('baz');
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal('baz');
+        expect(spy.args[0][2]).to.equal('bar');
+    
+        element.setAttribute('foo', 'qux');
+    
+        expect(element.getAttribute('foo')).to.equal('qux');
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal('foo');
+        expect(spy.args[1][1]).to.equal('qux');
+        expect(spy.args[1][2]).to.equal('baz');
+    });
+    
+    it('should support multiple prop event subscriptions', () => {
+        const spy1 = sinon.spy();
+        const spy2 = sinon.spy();
+        
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+            subscribe('attr', spy1);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        element.subscribe('attr', spy2);
+    
+        expect(spy1.callCount).to.equal(0);
+        expect(spy2.callCount).to.equal(0);
+    
+        element.setAttribute('foo', 'baz');
+    
+        expect(spy1.callCount).to.equal(1);
+        expect(spy1.args[0][0]).to.equal('foo');
+        expect(spy1.args[0][1]).to.equal('baz');
+        expect(spy1.args[0][2]).to.equal('bar');
+    
+        expect(spy2.callCount).to.equal(1);
+        expect(spy2.args[0][0]).to.equal('foo');
+        expect(spy2.args[0][1]).to.equal('baz');
+        expect(spy2.args[0][2]).to.equal('bar');
+    
+        element.setAttribute('foo', 'qux');
+    
+        expect(spy1.callCount).to.equal(2);
+        expect(spy1.args[1][0]).to.equal('foo');
+        expect(spy1.args[1][1]).to.equal('qux');
+        expect(spy1.args[1][2]).to.equal('baz');
+    
+        expect(spy2.callCount).to.equal(2);
+        expect(spy2.args[1][0]).to.equal('foo');
+        expect(spy2.args[1][1]).to.equal('qux');
+        expect(spy2.args[1][2]).to.equal('baz');
+    });
+    
+    it('should support unsubscribing from a prop event subscription', () => {
+        let unsubscribe;
+        const spy1 = sinon.spy();
+        const spy2 = sinon.spy();
+        
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+            subscribe('attr', spy1);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+        
+        unsubscribe = element.subscribe('attr', spy2);
+    
+        element.setAttribute('foo', 'baz');
+    
+        expect(spy1.callCount).to.equal(1);
+        expect(spy1.args[0][0]).to.equal('foo');
+        expect(spy1.args[0][1]).to.equal('baz');
+        expect(spy1.args[0][2]).to.equal('bar');
+    
+        expect(spy2.callCount).to.equal(1);
+        expect(spy2.args[0][0]).to.equal('foo');
+        expect(spy2.args[0][1]).to.equal('baz');
+        expect(spy2.args[0][2]).to.equal('bar');
+    
+        expect(unsubscribe).to.be.a('function');
+        unsubscribe();
+    
+        element.setAttribute('foo', 'qux');
+    
+        expect(spy1.callCount).to.equal(2);
+        expect(spy1.args[1][0]).to.equal('foo');
+        expect(spy1.args[1][1]).to.equal('qux');
+        expect(spy1.args[1][2]).to.equal('baz');
+    
+        expect(spy2.callCount).to.equal(1);
+    });
 });

@@ -1,7 +1,11 @@
-import { initializeProps } from './utils';
+import { initializeProps, toAttribute } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
+
+        static get observedAttributes() {
+            return Object.keys(props).map((name) => toAttribute(name));
+        }
 
         constructor() {
             super();
@@ -52,6 +56,16 @@ function createComponent(props, callback) {
             const subscribers = this._subscribers.unmount;
             if (subscribers) {
                 subscribers.slice().forEach((callback) => callback());
+            }
+        }
+
+        attributeChangedCallback(name, oldVal, newVal) {
+            if (!this._initialized) {
+                return;
+            }
+            const subscribers = this._subscribers.attr;
+            if (subscribers) {
+                subscribers.slice().forEach((callback) => callback(name, newVal, oldVal));
             }
         }
     }
