@@ -7,12 +7,22 @@ describe('elementize', () => {
     document.body.appendChild(container);
 
     const generateTestName = () => `test-element-${++index}`;
+
     const getTestName = () => `test-element-${index}`;
+
     const createTestElement = () => {
         const element = document.createElement(getTestName());
         elements.push(element);
         return element;
     };
+
+    const createHTMLTestElement = (attributes = {}) => {
+        const div = document.createElement('div');
+        div.innerHTML = `<${getTestName()} ${Object.keys(attributes).map((name) => `${name}="${attributes[name]}"`).join('')}></${getTestName()}>`;
+        const element = div.firstChild;
+        elements.push(element);
+        return element;
+    }
 
     afterEach(() => {
         while (elements.length > 0) {
@@ -266,7 +276,7 @@ describe('elementize', () => {
         expect(spy2.callCount).to.equal(1);
     });
 
-    it('should support properties definition', () => {
+    it('should support default properties definition', () => {
         elementize(generateTestName(), {foo: 'bar', baz: 10}, (element) => {
             expect(element.foo).to.equal('bar');
             expect(element.baz).to.equal(10);
@@ -316,6 +326,58 @@ describe('elementize', () => {
         delete element.foo;
 
         expect(element.foo).to.equal(undefined);
+    });
+
+    it('should update multiple properties', () => {
+        elementize(generateTestName(), {foo: 'a', bar: 1}, () => 'foo');
+
+        const element = createTestElement();
+
+        expect(element.foo).to.equal(undefined);
+        expect(element.bar).to.equal(undefined);
+
+        container.appendChild(element);
+
+        expect(element.foo).to.equal('a');
+        expect(element.bar).to.equal(1);
+
+        element.foo = 'b';
+
+        expect(element.foo).to.equal('b');
+        expect(element.bar).to.equal(1);
+
+        element.bar = 2;
+
+        expect(element.foo).to.equal('b');
+        expect(element.bar).to.equal(2);
+    });
+
+    it('should override default property value if attribute exists', () => {
+        elementize(generateTestName(), {foo: 'bar'}, (element) => {
+            expect(element.foo).to.equal('baz');
+            expect(element.getAttribute('foo')).to.equal('baz');
+        });
+
+        const element = createHTMLTestElement({foo: 'baz'});
+
+        expect(element.foo).to.equal(undefined);
+        expect(element.getAttribute('foo')).to.equal('baz');
+
+        container.appendChild(element);
+        
+        expect(element.foo).to.equal('baz');
+        expect(element.getAttribute('foo')).to.equal('baz');
+    });
+
+    it('should convert a camel-cased property name into a kebab-case attribute name', () => {
+        elementize(generateTestName(), {fooBarBaz: 'a'}, (element) => {
+            expect(element.getAttribute('foo-bar-baz')).to.equal('a');
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+        
+        expect(element.getAttribute('foo-bar-baz')).to.equal('a');
     });
 
     it('should support prop event subscription', () => {
@@ -425,29 +487,5 @@ describe('elementize', () => {
         expect(spy1.args[1][2]).to.equal('baz');
 
         expect(spy2.callCount).to.equal(1);
-    });
-
-    it('should override default property value if attribute exists', () => {
-        elementize(generateTestName(), {foo: 'bar'}, (element) => {
-            expect(element.foo).to.equal('baz');
-            expect(element.getAttribute('foo')).to.equal('baz');
-        });
-    
-        container.innerHTML = `<${getTestName()} foo="baz"></${getTestName()}>`;
-        const element = container.firstChild;
-        
-        expect(element.foo).to.equal('baz');
-        expect(element.getAttribute('foo')).to.equal('baz');
-    });
-
-    it('should convert a camel-cased property name into a kebab-case attribute name', () => {
-        elementize(generateTestName(), {fooBarBaz: 'a'}, (element) => {
-            expect(element.getAttribute('foo-bar-baz')).to.equal('a');
-        });
-    
-        const element = createTestElement();
-        container.appendChild(element);
-        
-        expect(element.getAttribute('foo-bar-baz')).to.equal('a');
     });
 });
