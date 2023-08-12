@@ -12,6 +12,12 @@ export function getCallback(name, callback) {
     };
 }
 
+export function callStack(stack, callback) {
+    if (stack) {
+        stack.slice().forEach(callback);
+    }
+}
+
 export function initializeProps(element, props) {
     Object.keys(props).forEach((prop) => {
         let value = props[prop];
@@ -32,10 +38,7 @@ export function initializeProps(element, props) {
                 if (oldVal === newVal) {
                     return;
                 }
-                const subscribers = element._subscribers.prop;
-                if (subscribers) {
-                    subscribers.slice().forEach((callback) => callback(prop, newVal, oldVal));
-                }
+                callStack(element._subscribers.prop, (callback) => callback(prop, newVal, oldVal));
             },
             enumerable: true,
             configurable: true

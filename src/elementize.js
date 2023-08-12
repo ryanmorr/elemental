@@ -1,4 +1,4 @@
-import { initializeProps, toAttribute, getCallback } from './utils';
+import { initializeProps, toAttribute, getCallback, callStack } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -50,18 +50,12 @@ function createComponent(props, callback) {
                 }
                 this._initialized = true;
             }
-            const subscribers = this._subscribers.mount;
-            if (subscribers) {
-                const parent = this.parentElement;
-                subscribers.slice().forEach((callback) => callback(parent));
-            }
+            const parent = this.parentElement;
+            callStack(this._subscribers.mount, (callback) => callback(parent));
         }
 
         disconnectedCallback() {
-            const subscribers = this._subscribers.unmount;
-            if (subscribers) {
-                subscribers.slice().forEach((callback) => callback());
-            }
+            callStack(this._subscribers.unmount, (callback) => callback());
         }
 
         attributeChangedCallback(name, oldVal, newVal) {
@@ -71,10 +65,7 @@ function createComponent(props, callback) {
             if (oldVal === newVal) {
                 return;
             }
-            const subscribers = this._subscribers.attr;
-            if (subscribers) {
-                subscribers.slice().forEach((callback) => callback(name, newVal, oldVal));
-            }
+            callStack(this._subscribers.attr, (callback) => callback(name, newVal, oldVal));
         }
     };
 }
