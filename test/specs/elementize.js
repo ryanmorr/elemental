@@ -352,6 +352,19 @@ describe('elementize', () => {
         expect(element.bar).to.equal(2);
     });
 
+    it('should reflect default properties to attributes', () => {
+        elementize(generateTestName(), {foo: 'a', bar: '1'}, (element) => {
+            expect(element.getAttribute('foo')).to.equal('a');
+            expect(element.getAttribute('bar')).to.equal('1');
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(element.getAttribute('foo')).to.equal('a');
+        expect(element.getAttribute('bar')).to.equal('1');
+    });
+
     it('should override default property value if attribute exists', () => {
         elementize(generateTestName(), {foo: 'bar'}, (element) => {
             expect(element.foo).to.equal('baz');
