@@ -81,8 +81,23 @@ describe('elementize', () => {
         expect(spy.callCount).to.equal(1);
     });
 
+    it('should support optional default properties', () => {
+        const spy = sinon.spy();
+
+        elementize(generateTestName(), spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(spy.callCount).to.equal(1);
+        expect(container.firstChild.localName).to.equal(getTestName());
+    });  
+
     it('should support returning shadow content as a DOM node', () => {
-        elementize(generateTestName(), {}, () => {
+        elementize(generateTestName(), () => {
             return document.createTextNode('foo');
         });
 
@@ -94,7 +109,7 @@ describe('elementize', () => {
     });
 
     it('should support returning shadow content as an HTML string', () => {
-        elementize(generateTestName(), {}, () => {
+        elementize(generateTestName(), () => {
             return '<div>foo</div>';
         });
 
@@ -104,11 +119,12 @@ describe('elementize', () => {
 
         expect(element.shadowRoot.innerHTML).to.equal('<div>foo</div>');
     });
+ 
 
     it('should support mount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             subscribe('mount', spy);
         });
 
@@ -133,7 +149,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             subscribe('mount', spy1);
         });
 
@@ -167,7 +183,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             unsubscribe = subscribe('mount', spy1);
         });
 
@@ -194,7 +210,7 @@ describe('elementize', () => {
     it('should support unmount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             subscribe('unmount', spy);
         });
 
@@ -219,7 +235,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 
@@ -250,7 +266,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {}, (element, subscribe) => {
+        elementize(generateTestName(), (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 

@@ -71,6 +71,10 @@ function createComponent(props, callback) {
 }
 
 export default function elementize(name, props, callback) {
+    if (typeof props === 'function') {
+        callback = props;
+        props = {};
+    }
     const Component = createComponent(props, callback);    
     customElements.define(name, Component);
     return Component;
