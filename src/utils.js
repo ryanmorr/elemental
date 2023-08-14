@@ -1,12 +1,19 @@
+const cache = {};
 const PROP_TO_ATTR_RE = /\.?([A-Z]+)/g;
 const ATTR_TO_PROP_RE = /-([a-z])/g;
 
 export function toProp(attrName) {
-    return attrName.replace(ATTR_TO_PROP_RE, (match, char) => char.toUpperCase());
+    if (attrName in cache) {
+        return cache[attrName];
+    }
+    return cache[attrName] = attrName.replace(ATTR_TO_PROP_RE, (match, char) => char.toUpperCase());
 }
 
 export function toAttribute(propName) {
-    return propName.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
+    if (propName in cache) {
+        return cache[propName];
+    }
+    return cache[propName] = propName.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
 }
 
 export function getCallback(name, callback) {
