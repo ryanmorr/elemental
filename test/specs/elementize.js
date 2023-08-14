@@ -724,4 +724,67 @@ describe('elementize', () => {
         expect(barSpy.args[0][1]).to.equal('1');
         expect(fooSpy.callCount).to.equal(1);
     });
+
+    it('should reflect attributes to properties on change', () => {
+        const spy = sinon.spy();
+
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        element.subscribe('prop', spy);
+
+        expect(element.foo).to.equal('bar');
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', 'baz');
+
+        expect(element.foo).to.equal('baz');
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal('baz');
+        expect(spy.args[0][2]).to.equal('bar');
+    });
+
+    it('should reflect kebab-case attributes to camel-case properties on change', () => {
+        const spy = sinon.spy();
+
+        elementize(generateTestName(), {fooBarBaz: 'a'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        element.subscribe('prop', spy);
+
+        expect(element.fooBarBaz).to.equal('a');
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo-bar-baz', 'b');
+
+        expect(element.fooBarBaz).to.equal('b');
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('fooBarBaz');
+        expect(spy.args[0][1]).to.equal('b');
+        expect(spy.args[0][2]).to.equal('a');
+    }); 
+
+    it('should not reflect properties to attributes on change', () => {
+        const spy = sinon.spy();
+
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+
+        const element = createHTMLTestElement({foo: 'baz'});
+        container.appendChild(element);
+
+        element.subscribe('attr', spy);
+
+        expect(element.getAttribute('foo')).to.equal('baz');
+        expect(spy.callCount).to.equal(0);
+
+        element.foo = 'qux';
+
+        expect(element.getAttribute('foo')).to.equal('baz');
+        expect(spy.callCount).to.equal(0);
+    });
 });
