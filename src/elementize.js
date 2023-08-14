@@ -1,4 +1,4 @@
-import { initializeProps, toAttribute, toProp, getCallback, callStack } from './utils';
+import { initializeProps, parseAttributeValue, toAttribute, toProp, getCallback, callStack } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -66,7 +66,7 @@ function createComponent(props, callback) {
                 return;
             }
             const prop = toProp(name);
-            this[prop] = newVal;
+            this[prop] = parseAttributeValue(newVal);
             callStack(this._subscribers.attr, (callback) => callback(name, newVal, oldVal));
         }
     };

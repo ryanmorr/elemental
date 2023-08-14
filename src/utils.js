@@ -1,6 +1,7 @@
 const cache = {};
 const PROP_TO_ATTR_RE = /\.?([A-Z]+)/g;
 const ATTR_TO_PROP_RE = /-([a-z])/g;
+const JSON_RE = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/;
 
 export function toProp(attrName) {
     if (attrName in cache) {
@@ -30,13 +31,33 @@ export function callStack(stack, callback) {
     }
 }
 
+export function parseAttributeValue(value) {
+    if (value === 'true' || value === '') {
+		return true;
+	}
+	if (value === 'false') {
+		return false;
+	}
+	if (value === +value + '') {
+		return +value;
+	}
+	if (JSON_RE.test(value)) {
+        try {
+            return JSON.parse(value);
+        } catch(e) {
+            // eslint-disable no-empty
+        }
+	}
+	return value;
+}
+
 export function initializeProps(element, props) {
     Object.keys(props).forEach((prop) => {
         let value = props[prop];
         const attr = toAttribute(prop);
         const attrValue = element.getAttribute(attr);
-        if (attrValue) {
-            value = attrValue;
+        if (attrValue != null) {
+            value = parseAttributeValue(attrValue);
         } else {
             element.setAttribute(attr, value);
         }

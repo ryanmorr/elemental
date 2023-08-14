@@ -16,9 +16,9 @@ describe('elementize', () => {
         return element;
     };
 
-    const createHTMLTestElement = (attributes = {}) => {
+    const createHTMLTestElement = (attrs = {}) => {
         const div = document.createElement('div');
-        div.innerHTML = `<${getTestName()} ${Object.keys(attributes).map((name) => `${name}="${attributes[name]}"`).join('')}></${getTestName()}>`;
+        div.innerHTML = `<${getTestName()} ${Object.keys(attrs).map((name) => `${name}='${attrs[name]}'`).join(' ')}></${getTestName()}>`;
         const element = div.firstChild;
         elements.push(element);
         return element;
@@ -726,13 +726,12 @@ describe('elementize', () => {
     });
 
     it('should reflect attributes to properties on change', () => {
-        const spy = sinon.spy();
-
         elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
 
+        const spy = sinon.spy();
         element.subscribe('prop', spy);
 
         expect(element.foo).to.equal('bar');
@@ -748,13 +747,12 @@ describe('elementize', () => {
     });
 
     it('should reflect kebab-case attributes to camel-case properties on change', () => {
-        const spy = sinon.spy();
-
         elementize(generateTestName(), {fooBarBaz: 'a'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
 
+        const spy = sinon.spy();
         element.subscribe('prop', spy);
 
         expect(element.fooBarBaz).to.equal('a');
@@ -770,13 +768,12 @@ describe('elementize', () => {
     }); 
 
     it('should not reflect properties to attributes on change', () => {
-        const spy = sinon.spy();
-
         elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
 
         const element = createHTMLTestElement({foo: 'baz'});
         container.appendChild(element);
 
+        const spy = sinon.spy();
         element.subscribe('attr', spy);
 
         expect(element.getAttribute('foo')).to.equal('baz');
@@ -786,5 +783,159 @@ describe('elementize', () => {
 
         expect(element.getAttribute('foo')).to.equal('baz');
         expect(spy.callCount).to.equal(0);
+    });
+
+    it('should parse a JSON string when reflecting an attribute to a property on initialization', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createHTMLTestElement({
+            foo: JSON.stringify({a: 1, b: 2, c: 3}),
+            bar: JSON.stringify(['x', 'y', 'z'])
+        });
+
+        container.appendChild(element);
+
+        expect(element.foo).to.deep.equal({a: 1, b: 2, c: 3});
+        expect(element.bar).to.deep.equal(['x', 'y', 'z']);
+    });
+
+    it('should convert a string true/false to a boolean when reflecting an attribute to a property on initialization', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createHTMLTestElement({foo: 'true', bar: 'false'});
+        container.appendChild(element);
+
+        expect(element.foo).to.equal(true);
+        expect(element.bar).to.equal(false);
+    });
+
+    it('should convert an empty string to a boolean true when reflecting an attribute to a property on initialization', () => {
+        elementize(generateTestName(), {foo: null}, () => 'foo');
+
+        const element = createHTMLTestElement({foo: ''});
+        container.appendChild(element);
+
+        expect(element.foo).to.equal(true);
+    });
+
+    it('should convert a numeric string to a number when reflecting an attribute to a property on initialization', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createHTMLTestElement({foo: '22', bar: '75.29'});
+        container.appendChild(element);
+
+        expect(element.foo).to.equal(22);
+        expect(element.bar).to.equal(75.29);
+    });
+
+    it('should parse a JSON string when reflecting an attribute to a property on change', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(element.foo).to.equal(null);
+        expect(element.bar).to.equal(null);
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', JSON.stringify({a: 1, b: 2, c: 3}));
+
+        expect(element.foo).to.deep.equal({a: 1, b: 2, c: 3});
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.deep.equal({a: 1, b: 2, c: 3});
+        expect(spy.args[0][2]).to.equal(null);
+
+        element.setAttribute('bar', JSON.stringify(['x', 'y', 'z']));
+
+        expect(element.bar).to.deep.equal(['x', 'y', 'z']);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal('bar');
+        expect(spy.args[1][1]).to.deep.equal(['x', 'y', 'z']);
+        expect(spy.args[1][2]).to.equal(null);
+    });
+
+    it('should convert a string true/false to a boolean when reflecting an attribute to a property on change', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(element.foo).to.equal(null);
+        expect(element.bar).to.equal(null);
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', 'true');
+
+        expect(element.foo).to.equal(true);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal(true);
+        expect(spy.args[0][2]).to.equal(null);
+
+        element.setAttribute('bar', 'false');
+
+        expect(element.bar).to.equal(false);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal('bar');
+        expect(spy.args[1][1]).to.equal(false);
+        expect(spy.args[1][2]).to.equal(null);
+    });
+
+    it('should convert an empty string to a boolean true when reflecting an attribute to a property on change', () => {
+        elementize(generateTestName(), {foo: null}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(element.foo).to.equal(null);
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', '');
+
+        expect(element.foo).to.equal(true);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal(true);
+        expect(spy.args[0][2]).to.equal(null);
+    });
+
+    it('should convert a numeric string to a number when reflecting an attribute to a property on change', () => {
+        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(element.foo).to.equal(null);
+        expect(element.bar).to.equal(null);
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', '13');
+
+        expect(element.foo).to.equal(13);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal(13);
+        expect(spy.args[0][2]).to.equal(null);
+
+        element.setAttribute('bar', '81.353');
+
+        expect(element.bar).to.equal(81.353);
+        expect(spy.callCount).to.equal(2);
+        expect(spy.args[1][0]).to.equal('bar');
+        expect(spy.args[1][1]).to.equal(81.353);
+        expect(spy.args[1][2]).to.equal(null);
     });
 });
