@@ -827,16 +827,6 @@ describe('elementize', () => {
         expect(element.bar).to.deep.equal(['x', 'y', 'z']);
     });
 
-    it('should convert a string true/false to a boolean when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
-
-        const element = createHTMLTestElement({foo: 'true', bar: 'false'});
-        container.appendChild(element);
-
-        expect(element.foo).to.equal(true);
-        expect(element.bar).to.equal(false);
-    });
-
     it('should convert an empty string to a boolean true when reflecting an attribute to a property on initialization', () => {
         elementize(generateTestName(), {foo: null}, () => 'foo');
 
@@ -883,36 +873,6 @@ describe('elementize', () => {
         expect(spy.callCount).to.equal(2);
         expect(spy.args[1][0]).to.equal('bar');
         expect(spy.args[1][1]).to.deep.equal(['x', 'y', 'z']);
-        expect(spy.args[1][2]).to.equal(null);
-    });
-
-    it('should convert a string true/false to a boolean when reflecting an attribute to a property on change', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
-
-        const element = createTestElement();
-        container.appendChild(element);
-
-        const spy = sinon.spy();
-        element.subscribe('prop', spy);
-
-        expect(element.foo).to.equal(null);
-        expect(element.bar).to.equal(null);
-        expect(spy.callCount).to.equal(0);
-
-        element.setAttribute('foo', 'true');
-
-        expect(element.foo).to.equal(true);
-        expect(spy.callCount).to.equal(1);
-        expect(spy.args[0][0]).to.equal('foo');
-        expect(spy.args[0][1]).to.equal(true);
-        expect(spy.args[0][2]).to.equal(null);
-
-        element.setAttribute('bar', 'false');
-
-        expect(element.bar).to.equal(false);
-        expect(spy.callCount).to.equal(2);
-        expect(spy.args[1][0]).to.equal('bar');
-        expect(spy.args[1][1]).to.equal(false);
         expect(spy.args[1][2]).to.equal(null);
     });
 

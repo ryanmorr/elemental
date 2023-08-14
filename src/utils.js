@@ -32,11 +32,8 @@ export function callStack(stack, callback) {
 }
 
 export function parseAttributeValue(value) {
-    if (value === 'true' || value === '') {
+    if (value === '') {
 		return true;
-	}
-	if (value === 'false') {
-		return false;
 	}
 	if (value === +value + '') {
 		return +value;
