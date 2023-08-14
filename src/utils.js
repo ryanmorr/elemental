@@ -59,7 +59,10 @@ export function initializeProps(element, props) {
         if (attrValue != null) {
             value = parseAttributeValue(attrValue);
         } else {
-            element.setAttribute(attr, value);
+            const type = typeof value;
+            if (type === 'string' || type === 'number' || value === true) {
+                element.setAttribute(attr, value === true ? '' : value);
+            }
         }
         Object.defineProperty(element, prop, {
             get() {

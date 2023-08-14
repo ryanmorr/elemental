@@ -381,6 +381,34 @@ describe('elementize', () => {
         expect(element.getAttribute('bar')).to.equal('1');
     });
 
+    it('should not reflect default properties to attributes if the value is a non-primitive', () => {
+        elementize(generateTestName(), {foo: true, bar: 123, baz: 'abc', qux: []}, (element) => {
+            expect(element.getAttribute('foo')).to.equal('');
+            expect(element.getAttribute('bar')).to.equal('123');
+            expect(element.getAttribute('baz')).to.equal('abc');
+            expect(element.hasAttribute('qux')).to.equal(false);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(element.getAttribute('foo')).to.equal('');
+        expect(element.getAttribute('bar')).to.equal('123');
+        expect(element.getAttribute('baz')).to.equal('abc');
+        expect(element.hasAttribute('qux')).to.equal(false);
+    });
+
+    it('should not reflect default properties to attributes if the value is boolean false', () => {
+        elementize(generateTestName(), {foo: false}, (element) => {
+            expect(element.hasAttribute('foo')).to.equal(false);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(element.hasAttribute('foo')).to.equal(false);
+    });
+
     it('should override default property value if attribute exists', () => {
         elementize(generateTestName(), {foo: 'bar'}, (element) => {
             expect(element.foo).to.equal('baz');
