@@ -58,16 +58,16 @@ function createComponent(props, attrs, callback) {
             callStack(this._subscribers.unmount, (callback) => callback());
         }
 
-        attributeChangedCallback(name, oldVal, newVal) {
+        attributeChangedCallback(attr, oldVal, newVal) {
             if (!this._initialized) {
                 return;
             }
             if (oldVal === newVal) {
                 return;
             }
-            const prop = toProp(name);
+            const prop = toProp(attr);
             this[prop] = parseAttributeValue(newVal);
-            callStack(this._subscribers.attr, (callback) => callback(name, newVal, oldVal));
+            callStack(this._subscribers.attr, (callback) => callback(attr, newVal, oldVal));
         }
     };
 }

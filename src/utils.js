@@ -25,18 +25,18 @@ function cloneProps(props) {
     }, {});
 }
 
-function toAttribute(propName) {
-    if (propName in cache) {
-        return cache[propName];
+function toAttribute(prop) {
+    if (prop in cache) {
+        return cache[prop];
     }
-    return cache[propName] = propName.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
+    return cache[prop] = prop.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
 }
 
-export function toProp(attrName) {
-    if (attrName in cache) {
-        return cache[attrName];
+export function toProp(attr) {
+    if (attr in cache) {
+        return cache[attr];
     }
-    return cache[attrName] = attrName.replace(ATTR_TO_PROP_RE, (match, char) => char.toUpperCase());
+    return cache[attr] = attr.replace(ATTR_TO_PROP_RE, (match, char) => char.toUpperCase());
 }
 
 export function getCallback(name, callback) {
@@ -71,11 +71,11 @@ export function parseAttributeValue(value) {
 }
 
 export function getObservedAttributes(props) {
-    return Object.keys(props).filter((name) => {
-        const value = props[name];
+    return Object.keys(props).filter((prop) => {
+        const value = props[prop];
         const type = typeof value;
         return type === 'string' || type === 'number' || type === 'boolean' || value === null;
-    }).map((name) => toAttribute(name));
+    }).map(toAttribute);
 }
 
 export function initializeProps(element, props) {
