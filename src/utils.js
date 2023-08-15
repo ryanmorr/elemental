@@ -3,6 +3,28 @@ const PROP_TO_ATTR_RE = /\.?([A-Z]+)/g;
 const ATTR_TO_PROP_RE = /-([a-z])/g;
 const JSON_RE = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/;
 
+function isPlainObject(obj) {
+    if (!obj || typeof obj !== 'object') {
+        return false;
+    }
+    const prototype = Object.getPrototypeOf(obj);
+    return prototype === null || prototype === Object.getPrototypeOf({});
+}
+
+function cloneProps(props) {
+    return Object.keys(props).reduce((copy, prop) => {
+        const value = props[prop];
+        if (isPlainObject(value)) {
+            copy[prop] = Object.assign({}, value);
+        } else if (Array.isArray(value)) {
+            copy[prop] = value.slice();
+        } else {
+            copy[prop] = value;
+        }
+        return copy;
+    }, {});
+}
+
 export function toProp(attrName) {
     if (attrName in cache) {
         return cache[attrName];
@@ -49,6 +71,7 @@ export function parseAttributeValue(value) {
 }
 
 export function initializeProps(element, props) {
+    props = cloneProps(props);
     Object.keys(props).forEach((prop) => {
         let value = props[prop];
         const attr = toAttribute(prop);

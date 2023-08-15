@@ -368,6 +368,21 @@ describe('elementize', () => {
         expect(element.bar).to.equal(2);
     });
 
+    it('should clone default properties for each element instance', () => {
+        elementize(generateTestName(), {foo: [1, 2, 3]}, () => 'foo');
+
+        const element1 = createTestElement();
+        const element2 = createTestElement();
+
+        container.appendChild(element1);
+        container.appendChild(element2);
+
+        element1.foo.push(4);
+
+        expect(element1.foo).to.deep.equal([1, 2, 3, 4]);
+        expect(element2.foo).to.deep.equal([1, 2, 3]);
+    });
+
     it('should reflect default properties to attributes', () => {
         elementize(generateTestName(), {foo: 'a', bar: '1'}, (element) => {
             expect(element.getAttribute('foo')).to.equal('a');
