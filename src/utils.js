@@ -11,18 +11,14 @@ function isPlainObject(obj) {
     return prototype === null || prototype === Object.getPrototypeOf({});
 }
 
-function cloneProps(props) {
-    return Object.keys(props).reduce((copy, prop) => {
-        const value = props[prop];
-        if (isPlainObject(value)) {
-            copy[prop] = Object.assign({}, value);
-        } else if (Array.isArray(value)) {
-            copy[prop] = value.slice();
-        } else {
-            copy[prop] = value;
-        }
-        return copy;
-    }, {});
+function cloneValue(value) {
+    if (isPlainObject(value)) {
+        return Object.assign({}, value);
+    }
+    if (Array.isArray(value)) {
+        return value.slice();
+    }
+    return value;
 }
 
 function toAttribute(prop) {
@@ -79,9 +75,8 @@ export function getObservedAttributes(props) {
 }
 
 export function initializeProps(element, props) {
-    props = cloneProps(props);
     Object.keys(props).forEach((prop) => {
-        let value = props[prop];
+        let value = cloneValue(props[prop]);
         const attr = toAttribute(prop);
         const attrValue = element.getAttribute(attr);
         if (attrValue != null) {
