@@ -1,14 +1,10 @@
-import { initializeProps, parseAttributeValue, toAttribute, toProp, getCallback, callStack } from './utils';
+import { initializeProps, parseAttributeValue, getObservedAttributes, toProp, getCallback, callStack } from './utils';
 
-function createComponent(props, callback) {
+function createComponent(props, attrs, callback) {
     return class extends HTMLElement {
 
         static get observedAttributes() {
-            return Object.keys(props).filter((name) => {
-                const value = props[name];
-                const type = typeof value;
-                return type === 'string' || type === 'number' || type === 'boolean' || value === null;
-            }).map((name) => toAttribute(name));
+            return attrs;
         }
 
         constructor() {
@@ -81,7 +77,7 @@ export default function elementize(name, props, callback) {
         callback = props;
         props = {};
     }
-    const Component = createComponent(props, callback);    
+    const Component = createComponent(props, getObservedAttributes(props), callback);    
     customElements.define(name, Component);
     return Component;
 }
