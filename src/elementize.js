@@ -4,7 +4,11 @@ function createComponent(props, callback) {
     return class extends HTMLElement {
 
         static get observedAttributes() {
-            return Object.keys(props).map((name) => toAttribute(name));
+            return Object.keys(props).filter((name) => {
+                const value = props[name];
+                const type = typeof value;
+                return type === 'string' || type === 'number' || type === 'boolean' || value === null;
+            }).map((name) => toAttribute(name));
         }
 
         constructor() {

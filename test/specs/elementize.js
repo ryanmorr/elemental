@@ -941,4 +941,20 @@ describe('elementize', () => {
         expect(spy.args[1][1]).to.equal(81.353);
         expect(spy.args[1][2]).to.equal(null);
     });
+
+    it('should not observe attributes if the reflected default properties are a non-primitive', () => {
+        elementize(generateTestName(), {foo: []}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('attr', spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        element.setAttribute('foo', 'bar');
+
+        expect(spy.callCount).to.equal(0);
+    });
 });
