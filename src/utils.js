@@ -28,7 +28,7 @@ function toAttribute(prop) {
     return cache[prop] = prop.replace(PROP_TO_ATTR_RE, (match, char) => '-' + char.toLowerCase());
 }
 
-export function toProp(attr) {
+export function toProperty(attr) {
     if (attr in cache) {
         return cache[attr];
     }

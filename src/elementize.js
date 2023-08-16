@@ -1,4 +1,4 @@
-import { initializeProps, parseAttributeValue, getObservedAttributes, toProp, getCallback, callStack } from './utils';
+import { initializeProps, parseAttributeValue, getObservedAttributes, toProperty, getCallback, callStack } from './utils';
 
 function createComponent(props, attrs, callback) {
     return class extends HTMLElement {
@@ -39,6 +39,7 @@ function createComponent(props, attrs, callback) {
         connectedCallback() {
             if (!this._initialized) {
                 initializeProps(this, props);
+                this._initialized = true;
                 const shadow = this.attachShadow({mode: 'open'});
                 const result = callback.call(this, this, this.subscribe.bind(this));
                 if (result) {
@@ -48,7 +49,6 @@ function createComponent(props, attrs, callback) {
                         shadow.appendChild(result);
                     }
                 }
-                this._initialized = true;
             }
             const parent = this.parentElement;
             callStack(this._subscribers.mount, (callback) => callback(parent));
@@ -65,7 +65,7 @@ function createComponent(props, attrs, callback) {
             if (oldVal === newVal) {
                 return;
             }
-            const prop = toProp(attr);
+            const prop = toProperty(attr);
             this[prop] = parseAttributeValue(newVal);
             callStack(this._subscribers.attr, (callback) => callback(attr, newVal, oldVal));
         }

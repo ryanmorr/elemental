@@ -561,6 +561,36 @@ describe('elementize', () => {
         expect(spy2.callCount).to.equal(1);
     });
 
+    it('should dispatch prop event if a property is changed within the constructor function', (done) => {
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+            const spy = sinon.spy();
+            subscribe('prop', spy);
+
+            expect(spy.callCount).to.equal(0);
+
+            element.foo = 'baz';
+
+            expect(element.foo).to.equal('baz');
+            expect(spy.callCount).to.equal(1);
+            expect(spy.args[0][0]).to.equal('foo');
+            expect(spy.args[0][1]).to.equal('baz');
+            expect(spy.args[0][2]).to.equal('bar');
+
+            element.foo = 'qux';
+
+            expect(element.foo).to.equal('qux');
+            expect(spy.callCount).to.equal(2);
+            expect(spy.args[1][0]).to.equal('foo');
+            expect(spy.args[1][1]).to.equal('qux');
+            expect(spy.args[1][2]).to.equal('baz');
+
+            done();
+        });
+
+        const element = createTestElement();
+        container.appendChild(element);
+    });
+
     it('should not dispatch prop event if the value is the same', () => {
         elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
 
@@ -719,6 +749,36 @@ describe('elementize', () => {
         expect(spy2.callCount).to.equal(1);
     });
 
+    it('should dispatch attr event if an attribute is changed within the constructor function', (done) => {    
+        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+            const spy = sinon.spy();
+            subscribe('attr', spy);
+
+            expect(spy.callCount).to.equal(0);
+    
+            element.setAttribute('foo', 'baz');
+        
+            expect(element.getAttribute('foo')).to.equal('baz');
+            expect(spy.callCount).to.equal(1);
+            expect(spy.args[0][0]).to.equal('foo');
+            expect(spy.args[0][1]).to.equal('baz');
+            expect(spy.args[0][2]).to.equal('bar');
+        
+            element.setAttribute('foo', 'qux');
+        
+            expect(element.getAttribute('foo')).to.equal('qux');
+            expect(spy.callCount).to.equal(2);
+            expect(spy.args[1][0]).to.equal('foo');
+            expect(spy.args[1][1]).to.equal('qux');
+            expect(spy.args[1][2]).to.equal('baz');
+
+            done();
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    });
+
     it('should not dispatch attr event if the value is the same', () => {
         elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
 
@@ -786,6 +846,26 @@ describe('elementize', () => {
         expect(spy.callCount).to.equal(1);
         expect(spy.args[0][0]).to.equal('foo');
         expect(spy.args[0][1]).to.equal('baz');
+        expect(spy.args[0][2]).to.equal('bar');
+    });
+
+    it('should set a property to null if the reflected attribute was removed', () => {
+        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+
+        const element = createTestElement();
+        container.appendChild(element);
+
+        const spy = sinon.spy();
+        element.subscribe('prop', spy);
+
+        expect(spy.callCount).to.equal(0);
+
+        element.removeAttribute('foo');
+
+        expect(element.foo).to.equal(null);
+        expect(spy.callCount).to.equal(1);
+        expect(spy.args[0][0]).to.equal('foo');
+        expect(spy.args[0][1]).to.equal(null);
         expect(spy.args[0][2]).to.equal('bar');
     });
 
