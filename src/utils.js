@@ -11,6 +11,11 @@ function isPlainObject(obj) {
     return prototype === null || prototype === Object.getPrototypeOf({});
 }
 
+function isPrimitive(value) {
+    const type = typeof value;
+    return type === 'string' || type === 'number' || type === 'boolean' || value === null;
+}
+
 function cloneValue(value) {
     if (isPlainObject(value)) {
         return Object.assign({}, value);
@@ -67,14 +72,10 @@ export function parseAttributeValue(value) {
 }
 
 export function getObservedAttributes(props) {
-    return Object.keys(props).filter((prop) => {
-        const value = props[prop];
-        const type = typeof value;
-        return type === 'string' || type === 'number' || type === 'boolean' || value === null;
-    }).map(toAttribute);
+    return Object.keys(props).filter((prop) => isPrimitive(props[prop])).map(toAttribute);
 }
 
-export function initializeProps(element, props) {
+export function initializeProperties(element, props) {
     Object.keys(props).forEach((prop) => {
         let value = cloneValue(props[prop]);
         const attr = toAttribute(prop);

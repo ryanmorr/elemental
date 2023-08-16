@@ -1,10 +1,10 @@
-import { initializeProps, parseAttributeValue, getObservedAttributes, toProperty, getCallback, callStack } from './utils';
+import { initializeProperties, parseAttributeValue, getObservedAttributes, toProperty, getCallback, callStack } from './utils';
 
-function createComponent(props, attrs, callback) {
+function createComponent(props, callback) {
     return class extends HTMLElement {
 
         static get observedAttributes() {
-            return attrs;
+            return getObservedAttributes(props);
         }
 
         constructor() {
@@ -38,7 +38,7 @@ function createComponent(props, attrs, callback) {
 
         connectedCallback() {
             if (!this._initialized) {
-                initializeProps(this, props);
+                initializeProperties(this, props);
                 this._initialized = true;
                 const shadow = this.attachShadow({mode: 'open'});
                 const result = callback.call(this, this, this.subscribe.bind(this));
@@ -77,7 +77,7 @@ export default function elementize(name, props, callback) {
         callback = props;
         props = {};
     }
-    const Component = createComponent(props, getObservedAttributes(props), callback);    
+    const Component = createComponent(props, callback);    
     customElements.define(name, Component);
     return Component;
 }
