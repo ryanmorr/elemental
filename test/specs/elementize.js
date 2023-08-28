@@ -384,24 +384,10 @@ describe('elementize', () => {
     });
 
     it('should reflect default properties to attributes', () => {
-        elementize(generateTestName(), {foo: 'a', bar: '1'}, (element) => {
-            expect(element.getAttribute('foo')).to.equal('a');
-            expect(element.getAttribute('bar')).to.equal('1');
-        });
-    
-        const element = createTestElement();
-        container.appendChild(element);
-    
-        expect(element.getAttribute('foo')).to.equal('a');
-        expect(element.getAttribute('bar')).to.equal('1');
-    });
-
-    it('should not reflect default properties to attributes if the value is a non-primitive', () => {
-        elementize(generateTestName(), {foo: true, bar: 123, baz: 'abc', qux: []}, (element) => {
+        elementize(generateTestName(), {foo: true, bar: 123, baz: 'abc'}, (element) => {
             expect(element.getAttribute('foo')).to.equal('');
             expect(element.getAttribute('bar')).to.equal('123');
             expect(element.getAttribute('baz')).to.equal('abc');
-            expect(element.hasAttribute('qux')).to.equal(false);
         });
     
         const element = createTestElement();
@@ -410,7 +396,34 @@ describe('elementize', () => {
         expect(element.getAttribute('foo')).to.equal('');
         expect(element.getAttribute('bar')).to.equal('123');
         expect(element.getAttribute('baz')).to.equal('abc');
-        expect(element.hasAttribute('qux')).to.equal(false);
+    });
+
+    it('should reflect falsy default properties to attributes', () => {
+        elementize(generateTestName(), {foo: '', bar: 0}, (element) => {
+            expect(element.getAttribute('foo')).to.equal('');
+            expect(element.getAttribute('bar')).to.equal('0');
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(element.getAttribute('foo')).to.equal('');
+        expect(element.getAttribute('bar')).to.equal('0');
+    });
+
+    it('should not reflect default properties to attributes if the value is a non-primitive', () => {
+        elementize(generateTestName(), {foo: [], bar: {}, baz: null}, (element) => {
+            expect(element.hasAttribute('foo')).to.equal(false);
+            expect(element.hasAttribute('bar')).to.equal(false);
+            expect(element.hasAttribute('baz')).to.equal(false);
+        });
+    
+        const element = createTestElement();
+        container.appendChild(element);
+    
+        expect(element.hasAttribute('foo')).to.equal(false);
+        expect(element.hasAttribute('bar')).to.equal(false);
+        expect(element.hasAttribute('baz')).to.equal(false);
     });
 
     it('should not reflect default properties to attributes if the value is boolean false', () => {
