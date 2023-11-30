@@ -1,6 +1,6 @@
 {
   "name": "@ryanmorr/elementize",
-  "description": "A lightweight and functional wrapper for defining Web Components",
+  "description": "A lightweight and functional wrapper for defining autonomous custom elements",
   "version": "0.1.0",
   "license": "Unlicense",
   "author": "Ryan Morr",
