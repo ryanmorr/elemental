@@ -6,19 +6,19 @@ describe('elementize', () => {
     const container = document.createElement('div');
     document.body.appendChild(container);
 
-    const generateTestName = () => `test-element-${++index}`;
+    const generateTagName = () => `test-element-${++index}`;
 
-    const getTestName = () => `test-element-${index}`;
+    const getTagName = () => `test-element-${index}`;
 
     const createTestElement = () => {
-        const element = document.createElement(getTestName());
+        const element = document.createElement(getTagName());
         elements.push(element);
         return element;
     };
 
     const createHTMLTestElement = (attrs = {}) => {
         const div = document.createElement('div');
-        div.innerHTML = `<${getTestName()} ${Object.keys(attrs).map((name) => `${name}='${attrs[name]}'`).join(' ')}></${getTestName()}>`;
+        div.innerHTML = `<${getTagName()} ${Object.keys(attrs).map((name) => `${name}='${attrs[name]}'`).join(' ')}></${getTagName()}>`;
         const element = div.firstChild;
         elements.push(element);
         return element;
@@ -36,12 +36,12 @@ describe('elementize', () => {
     it('should register and create a custom element', () => {
         const spy = sinon.spy();
 
-        const CustomElement = elementize(generateTestName(), {}, spy);
+        const CustomElement = elementize(generateTagName(), {}, spy);
 
         expect(CustomElement).to.be.a('function');
         expect(spy.callCount).to.equal(0);
 
-        const constructor = customElements.get(getTestName());
+        const constructor = customElements.get(getTagName());
         expect(constructor).to.exist;
         expect(constructor).to.equal(CustomElement);
 
@@ -56,7 +56,7 @@ describe('elementize', () => {
         expect(spy.calledOn(element)).to.equal(true);
 
         expect(element.nodeType).to.equal(1);
-        expect(element.localName).to.equal(getTestName());
+        expect(element.localName).to.equal(getTagName());
         expect(element).to.be.an.instanceof(CustomElement);
         expect(element).to.be.an.instanceof(HTMLElement);
     });
@@ -64,7 +64,7 @@ describe('elementize', () => {
     it('should not invoke the initialization function twice', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), {}, spy);
+        elementize(generateTagName(), {}, spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -84,7 +84,7 @@ describe('elementize', () => {
     it('should support optional default properties', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), spy);
+        elementize(generateTagName(), spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -93,11 +93,11 @@ describe('elementize', () => {
         container.appendChild(element);
 
         expect(spy.callCount).to.equal(1);
-        expect(container.firstChild.localName).to.equal(getTestName());
+        expect(container.firstChild.localName).to.equal(getTagName());
     });  
 
     it('should support returning shadow content as a DOM node', () => {
-        elementize(generateTestName(), () => {
+        elementize(generateTagName(), () => {
             return document.createTextNode('foo');
         });
 
@@ -109,7 +109,7 @@ describe('elementize', () => {
     });
 
     it('should support returning shadow content as an HTML string', () => {
-        elementize(generateTestName(), () => {
+        elementize(generateTagName(), () => {
             return '<div>foo</div>';
         });
 
@@ -124,7 +124,7 @@ describe('elementize', () => {
     it('should support mount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             subscribe('mount', spy);
         });
 
@@ -149,7 +149,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             subscribe('mount', spy1);
         });
 
@@ -183,7 +183,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             unsubscribe = subscribe('mount', spy1);
         });
 
@@ -210,7 +210,7 @@ describe('elementize', () => {
     it('should support unmount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy);
         });
 
@@ -235,7 +235,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 
@@ -266,7 +266,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), (element, subscribe) => {
+        elementize(generateTagName(), (element, subscribe) => {
             subscribe('unmount', spy1);
         });
 
@@ -293,7 +293,7 @@ describe('elementize', () => {
     });
 
     it('should support default properties definition', () => {
-        elementize(generateTestName(), {foo: 'bar', baz: 10}, (element) => {
+        elementize(generateTagName(), {foo: 'bar', baz: 10}, (element) => {
             expect(element.foo).to.equal('bar');
             expect(element.baz).to.equal(10);
         });
@@ -320,7 +320,7 @@ describe('elementize', () => {
     });
 
     it('should enumerate properties', () => {
-        elementize(generateTestName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
+        elementize(generateTagName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -334,7 +334,7 @@ describe('elementize', () => {
     });
 
     it('should be able to delete a property', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -345,7 +345,7 @@ describe('elementize', () => {
     });
 
     it('should update multiple properties', () => {
-        elementize(generateTestName(), {foo: 'a', bar: 1}, () => 'foo');
+        elementize(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
 
         const element = createTestElement();
 
@@ -369,7 +369,7 @@ describe('elementize', () => {
     });
 
     it('should clone default properties for each element instance', () => {
-        elementize(generateTestName(), {foo: [1, 2, 3]}, () => 'foo');
+        elementize(generateTagName(), {foo: [1, 2, 3]}, () => 'foo');
 
         const element1 = createTestElement();
         const element2 = createTestElement();
@@ -384,7 +384,7 @@ describe('elementize', () => {
     });
 
     it('should reflect default properties to attributes', () => {
-        elementize(generateTestName(), {foo: true, bar: 123, baz: 'abc'}, (element) => {
+        elementize(generateTagName(), {foo: true, bar: 123, baz: 'abc'}, (element) => {
             expect(element.getAttribute('foo')).to.equal('');
             expect(element.getAttribute('bar')).to.equal('123');
             expect(element.getAttribute('baz')).to.equal('abc');
@@ -399,7 +399,7 @@ describe('elementize', () => {
     });
 
     it('should reflect falsy default properties to attributes', () => {
-        elementize(generateTestName(), {foo: '', bar: 0}, (element) => {
+        elementize(generateTagName(), {foo: '', bar: 0}, (element) => {
             expect(element.getAttribute('foo')).to.equal('');
             expect(element.getAttribute('bar')).to.equal('0');
         });
@@ -412,7 +412,7 @@ describe('elementize', () => {
     });
 
     it('should not reflect default properties to attributes if the value is a non-primitive', () => {
-        elementize(generateTestName(), {foo: [], bar: {}, baz: null}, (element) => {
+        elementize(generateTagName(), {foo: [], bar: {}, baz: null}, (element) => {
             expect(element.hasAttribute('foo')).to.equal(false);
             expect(element.hasAttribute('bar')).to.equal(false);
             expect(element.hasAttribute('baz')).to.equal(false);
@@ -427,7 +427,7 @@ describe('elementize', () => {
     });
 
     it('should not reflect default properties to attributes if the value is boolean false', () => {
-        elementize(generateTestName(), {foo: false}, (element) => {
+        elementize(generateTagName(), {foo: false}, (element) => {
             expect(element.hasAttribute('foo')).to.equal(false);
         });
     
@@ -438,7 +438,7 @@ describe('elementize', () => {
     });
 
     it('should override default property value if attribute exists', () => {
-        elementize(generateTestName(), {foo: 'bar'}, (element) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
             expect(element.foo).to.equal('baz');
             expect(element.getAttribute('foo')).to.equal('baz');
         });
@@ -455,7 +455,7 @@ describe('elementize', () => {
     });
 
     it('should convert a camel-cased property name into a kebab-case attribute name', () => {
-        elementize(generateTestName(), {fooBarBaz: 'a'}, (element) => {
+        elementize(generateTagName(), {fooBarBaz: 'a'}, (element) => {
             expect(element.getAttribute('foo-bar-baz')).to.equal('a');
         });
     
@@ -468,7 +468,7 @@ describe('elementize', () => {
     it('should support prop event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy);
         });
 
@@ -498,7 +498,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy1);
         });
 
@@ -540,7 +540,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('prop', spy1);
         });
 
@@ -575,7 +575,7 @@ describe('elementize', () => {
     });
 
     it('should dispatch prop event if a property is changed within the constructor function', (done) => {
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             const spy = sinon.spy();
             subscribe('prop', spy);
 
@@ -605,7 +605,7 @@ describe('elementize', () => {
     });
 
     it('should not dispatch prop event if the value is the same', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -625,7 +625,7 @@ describe('elementize', () => {
     });
 
     it('should support specific prop event subscription', () => {
-        elementize(generateTestName(), {foo: 'a', bar: 1}, () => 'foo');
+        elementize(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -656,7 +656,7 @@ describe('elementize', () => {
     it('should support attr event subscription', () => {
         const spy = sinon.spy();
     
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('attr', spy);
         });
     
@@ -686,7 +686,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('attr', spy1);
         });
     
@@ -728,7 +728,7 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             subscribe('attr', spy1);
         });
     
@@ -763,7 +763,7 @@ describe('elementize', () => {
     });
 
     it('should dispatch attr event if an attribute is changed within the constructor function', (done) => {    
-        elementize(generateTestName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
             const spy = sinon.spy();
             subscribe('attr', spy);
 
@@ -793,7 +793,7 @@ describe('elementize', () => {
     });
 
     it('should not dispatch attr event if the value is the same', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -813,7 +813,7 @@ describe('elementize', () => {
     });
 
     it('should support specific prop event subscription', () => {
-        elementize(generateTestName(), {foo: 'a', bar: '1'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'a', bar: '1'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -842,7 +842,7 @@ describe('elementize', () => {
     });
 
     it('should reflect attributes to properties on change', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -863,7 +863,7 @@ describe('elementize', () => {
     });
 
     it('should set a property to null if the reflected attribute was removed', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -883,7 +883,7 @@ describe('elementize', () => {
     });
 
     it('should reflect kebab-case attributes to camel-case properties on change', () => {
-        elementize(generateTestName(), {fooBarBaz: 'a'}, () => 'foo');
+        elementize(generateTagName(), {fooBarBaz: 'a'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -904,7 +904,7 @@ describe('elementize', () => {
     }); 
 
     it('should not reflect properties to attributes on change', () => {
-        elementize(generateTestName(), {foo: 'bar'}, () => 'foo');
+        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createHTMLTestElement({foo: 'baz'});
         container.appendChild(element);
@@ -922,7 +922,7 @@ describe('elementize', () => {
     });
 
     it('should parse a JSON string when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createHTMLTestElement({
             foo: JSON.stringify({a: 1, b: 2, c: 3}),
@@ -936,7 +936,7 @@ describe('elementize', () => {
     });
 
     it('should convert an empty string to a boolean true when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTestName(), {foo: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null}, () => 'foo');
 
         const element = createHTMLTestElement({foo: ''});
         container.appendChild(element);
@@ -945,7 +945,7 @@ describe('elementize', () => {
     });
 
     it('should convert a numeric string to a number when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createHTMLTestElement({foo: '22', bar: '75.29'});
         container.appendChild(element);
@@ -955,7 +955,7 @@ describe('elementize', () => {
     });
 
     it('should parse a JSON string when reflecting an attribute to a property on change', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -985,7 +985,7 @@ describe('elementize', () => {
     });
 
     it('should convert an empty string to a boolean true when reflecting an attribute to a property on change', () => {
-        elementize(generateTestName(), {foo: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -1006,7 +1006,7 @@ describe('elementize', () => {
     });
 
     it('should convert a numeric string to a number when reflecting an attribute to a property on change', () => {
-        elementize(generateTestName(), {foo: null, bar: null}, () => 'foo');
+        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -1036,7 +1036,7 @@ describe('elementize', () => {
     });
 
     it('should not observe attributes if the reflected default properties are a non-primitive', () => {
-        elementize(generateTestName(), {foo: []}, () => 'foo');
+        elementize(generateTagName(), {foo: []}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
