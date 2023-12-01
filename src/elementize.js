@@ -41,7 +41,7 @@ function createComponent(props, callback) {
                 initializeProperties(this, props);
                 this._initialized = true;
                 const shadow = this.attachShadow({mode: 'open'});
-                const result = callback.call(this, this, this.subscribe.bind(this));
+                const result = callback.call(this, this);
                 if (result) {
                     if (typeof result === 'string') {
                         shadow.innerHTML = result;

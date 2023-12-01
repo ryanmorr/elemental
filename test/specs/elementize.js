@@ -124,8 +124,8 @@ describe('elementize', () => {
     it('should support mount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), (element, subscribe) => {
-            subscribe('mount', spy);
+        elementize(generateTagName(), (element) => {
+            element.subscribe('mount', spy);
         });
 
         const element = createTestElement();
@@ -149,8 +149,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element, subscribe) => {
-            subscribe('mount', spy1);
+        elementize(generateTagName(), (element) => {
+            element.subscribe('mount', spy1);
         });
 
         const element = createTestElement();
@@ -183,8 +183,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element, subscribe) => {
-            unsubscribe = subscribe('mount', spy1);
+        elementize(generateTagName(), (element) => {
+            unsubscribe = element.subscribe('mount', spy1);
         });
 
         const element = createTestElement();
@@ -210,8 +210,8 @@ describe('elementize', () => {
     it('should support unmount event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), (element, subscribe) => {
-            subscribe('unmount', spy);
+        elementize(generateTagName(), (element) => {
+            element.subscribe('unmount', spy);
         });
 
         const element = createTestElement();
@@ -235,8 +235,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element, subscribe) => {
-            subscribe('unmount', spy1);
+        elementize(generateTagName(), (element) => {
+            element.subscribe('unmount', spy1);
         });
 
         const element = createTestElement();
@@ -266,8 +266,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element, subscribe) => {
-            subscribe('unmount', spy1);
+        elementize(generateTagName(), (element) => {
+            element.subscribe('unmount', spy1);
         });
 
         const element = createTestElement();
@@ -468,8 +468,8 @@ describe('elementize', () => {
     it('should support prop event subscription', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('prop', spy);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('prop', spy);
         });
 
         const element = createTestElement();
@@ -498,8 +498,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('prop', spy1);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('prop', spy1);
         });
 
         const element = createTestElement();
@@ -540,8 +540,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('prop', spy1);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('prop', spy1);
         });
 
         const element = createTestElement();
@@ -575,9 +575,9 @@ describe('elementize', () => {
     });
 
     it('should dispatch prop event if a property is changed within the constructor function', (done) => {
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
-            subscribe('prop', spy);
+            element.subscribe('prop', spy);
 
             expect(spy.callCount).to.equal(0);
 
@@ -656,8 +656,8 @@ describe('elementize', () => {
     it('should support attr event subscription', () => {
         const spy = sinon.spy();
     
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('attr', spy);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('attr', spy);
         });
     
         const element = createTestElement();
@@ -686,8 +686,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('attr', spy1);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('attr', spy1);
         });
     
         const element = createTestElement();
@@ -728,8 +728,8 @@ describe('elementize', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
-            subscribe('attr', spy1);
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+            element.subscribe('attr', spy1);
         });
     
         const element = createTestElement();
@@ -763,9 +763,9 @@ describe('elementize', () => {
     });
 
     it('should dispatch attr event if an attribute is changed within the constructor function', (done) => {    
-        elementize(generateTagName(), {foo: 'bar'}, (element, subscribe) => {
+        elementize(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
-            subscribe('attr', spy);
+            element.subscribe('attr', spy);
 
             expect(spy.callCount).to.equal(0);
     
