@@ -22,7 +22,11 @@ function createComponent(props, callback) {
             if (this.shadowRoot) {
                 const sheet = new CSSStyleSheet();
                 sheet.replaceSync(value);
-                this.shadowRoot.adoptedStyleSheets = [sheet];
+                if (this.shadowRoot.adoptedStyleSheets.length === 0) { 
+                    this.shadowRoot.adoptedStyleSheets = [sheet];
+                } else {
+                    this.shadowRoot.adoptedStyleSheets.push(sheet);
+                }
             }
         }
 
