@@ -26,6 +26,10 @@ export function createHTMLTestElement(attrs = {}) {
     return element;
 }
 
+export function getStyle(el, prop) {
+    return el.ownerDocument.defaultView.getComputedStyle(el).getPropertyValue(prop);
+}
+
 afterEach(() => {
     while (elements.length > 0) {
         const element = elements.pop();

@@ -18,6 +18,14 @@ function createComponent(props, callback) {
             };
         }
 
+        set css(value) {
+            if (this.shadowRoot) {
+                const sheet = new CSSStyleSheet();
+                sheet.replaceSync(value);
+                this.shadowRoot.adoptedStyleSheets = [sheet];
+            }
+        }
+
         subscribe(name, callback) {
             if (name.includes(':')) {
                 const parts = name.split(':');
