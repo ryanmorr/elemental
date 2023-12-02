@@ -20,8 +20,13 @@ function createComponent(props, callback) {
 
         set css(value) {
             if (this.shadowRoot) {
-                const sheet = new CSSStyleSheet();
-                sheet.replaceSync(value);
+                let sheet;
+                if (typeof value === 'string') {
+                    sheet = new CSSStyleSheet();
+                    sheet.replaceSync(value);
+                } else {
+                    sheet = value;
+                }
                 if (this.shadowRoot.adoptedStyleSheets.length === 0) { 
                     this.shadowRoot.adoptedStyleSheets = [sheet];
                 } else {
