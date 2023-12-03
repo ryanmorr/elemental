@@ -147,4 +147,40 @@ describe('css', () => {
         expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('51px');
         expect(getStyle(element.shadowRoot.lastChild, 'display')).to.equal('inline-flex');
     });
+
+    it('should support CSS with an array of styles', () => {
+        elementize(generateTagName(), (element) => {
+            const string = `
+                div {
+                    width: 27px;
+                }
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                div {
+                    padding: 42px;
+                }
+            `;
+
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(`
+                div {
+                    margin: 13px
+                }
+            `);
+
+            element.css = [string, style, sheet];
+
+            return '<div></div>';
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('27px');
+        expect(getStyle(element.shadowRoot.lastChild, 'padding')).to.equal('42px');
+        expect(getStyle(element.shadowRoot.lastChild, 'margin')).to.equal('13px');
+    });
 });

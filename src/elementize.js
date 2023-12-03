@@ -20,6 +20,10 @@ function createComponent(props, callback) {
 
         set css(value) {
             if (this.shadowRoot) {
+                if (Array.isArray(value)) {
+                    value.forEach((val) => this.css = val);
+                    return;
+                }
                 if (value.nodeName) {
                     this.shadowRoot.appendChild(value);
                     return;
