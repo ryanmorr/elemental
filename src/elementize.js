@@ -1,4 +1,4 @@
-import { initializeProperties, parseAttributeValue, getObservedAttributes, toProperty, getCallback, callStack } from './utils';
+import { initializeProperties, parseAttributeValue, getObservedAttributes, toProperty, applyStyles, getCallback, callStack } from './utils';
 
 function createComponent(props, callback) {
     return class extends HTMLElement {
@@ -20,26 +20,7 @@ function createComponent(props, callback) {
 
         set css(value) {
             if (this.shadowRoot) {
-                if (Array.isArray(value)) {
-                    value.forEach((val) => this.css = val);
-                    return;
-                }
-                if (value.nodeName) {
-                    this.shadowRoot.appendChild(value);
-                    return;
-                }
-                let sheet;
-                if (typeof value === 'string') {
-                    sheet = new CSSStyleSheet();
-                    sheet.replaceSync(value);
-                } else {
-                    sheet = value;
-                }
-                if (this.shadowRoot.adoptedStyleSheets.length === 0) { 
-                    this.shadowRoot.adoptedStyleSheets = [sheet];
-                } else {
-                    this.shadowRoot.adoptedStyleSheets.push(sheet);
-                }
+                applyStyles(this.shadowRoot, value);
             }
         }
 
