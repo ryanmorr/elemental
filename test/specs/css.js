@@ -1,4 +1,4 @@
-import { container, generateTagName, getTagName, createTestElement, getStyle } from '../setup';
+import { container, generateTagName, createTestElement, queryShadowRoot, getStyle } from '../setup';
 import elementize from '../../src/elementize';
 
 describe('css', () => {
@@ -17,33 +17,8 @@ describe('css', () => {
 
         container.appendChild(element);
 
-        expect(getStyle(element.shadowRoot.firstChild, 'width')).to.equal('14px');
+        expect(getStyle(queryShadowRoot('div'), 'width')).to.equal('14px');
         expect(getStyle(container, 'width')).to.not.equal('14px');
-    });
-
-    it('should append CSS as a string', () => {
-        elementize(generateTagName(), (element) => {
-            element.css = `
-                div {
-                    width: 14px;
-                }
-            `;
-
-            element.css = `
-                div {
-                    display: flex;
-                }
-            `;
-
-            return '<div></div>';
-        });
-
-        const element = createTestElement();
-
-        container.appendChild(element);
-
-        expect(getStyle(element.shadowRoot.firstChild, 'width')).to.equal('14px');
-        expect(getStyle(element.shadowRoot.firstChild, 'display')).to.equal('flex');
     });
 
     it('should support CSS as a sheet', () => {
@@ -64,37 +39,8 @@ describe('css', () => {
 
         container.appendChild(element);
 
-        expect(getStyle(element.shadowRoot.firstChild, 'width')).to.equal('23px');
-    });
-
-    it('should append CSS as a sheet', () => {
-        elementize(generateTagName(), (element) => {
-            const sheet1 = new CSSStyleSheet();
-            sheet1.replaceSync(`
-                div {
-                    width: 44px;
-                }
-            `);
-
-            const sheet2 = new CSSStyleSheet();
-            sheet2.replaceSync(`
-                div {
-                    display: inline;
-                }
-            `);
-
-            element.css = sheet1;
-            element.css = sheet2;
-
-            return '<div></div>';
-        });
-
-        const element = createTestElement();
-
-        container.appendChild(element);
-
-        expect(getStyle(element.shadowRoot.firstChild, 'width')).to.equal('44px');
-        expect(getStyle(element.shadowRoot.firstChild, 'display')).to.equal('inline');
+        expect(getStyle(queryShadowRoot('div'), 'width')).to.equal('23px');
+        expect(getStyle(container, 'width')).to.not.equal('23px');
     });
 
     it('should support CSS as a style element', () => {
@@ -115,37 +61,8 @@ describe('css', () => {
 
         container.appendChild(element);
 
-        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('51px');
-    });
-
-    it('should append CSS as a style element', () => {
-        elementize(generateTagName(), (element) => {
-            const style1 = document.createElement('style');
-            style1.textContent = `
-                div {
-                    width: 51px;
-                }
-            `;
-
-            const style2 = document.createElement('style');
-            style2.textContent = `
-                div {
-                    display: inline-flex;
-                }
-            `;
-
-            element.css = style1;
-            element.css = style2;
-
-            return '<div></div>';
-        });
-
-        const element = createTestElement();
-
-        container.appendChild(element);
-
-        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('51px');
-        expect(getStyle(element.shadowRoot.lastChild, 'display')).to.equal('inline-flex');
+        expect(getStyle(queryShadowRoot('div'), 'width')).to.equal('51px');
+        expect(getStyle(container, 'width')).to.not.equal('51px');
     });
 
     it('should support CSS with an array of styles', () => {
@@ -179,8 +96,48 @@ describe('css', () => {
 
         container.appendChild(element);
 
-        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('27px');
-        expect(getStyle(element.shadowRoot.lastChild, 'padding')).to.equal('42px');
-        expect(getStyle(element.shadowRoot.lastChild, 'margin')).to.equal('13px');
+        const div = queryShadowRoot('div');
+        expect(getStyle(div, 'width')).to.equal('27px');
+        expect(getStyle(div, 'padding')).to.equal('42px');
+        expect(getStyle(div, 'margin')).to.equal('13px');
+    });
+
+    it('should append and not overwrite CSS with each assignment', () => {
+        elementize(generateTagName(), (element) => {
+            element.css = `
+                div {
+                    width: 55px;
+                }
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                div {
+                    padding: 4px;
+                }
+            `;
+
+            element.css = style;
+
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(`
+                div {
+                    margin: 19px
+                }
+            `);
+
+            element.css = [sheet];
+
+            return '<div></div>';
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        const div = queryShadowRoot('div');
+        expect(getStyle(div, 'width')).to.equal('55px');
+        expect(getStyle(div, 'padding')).to.equal('4px');
+        expect(getStyle(div, 'margin')).to.equal('19px');
     });
 });

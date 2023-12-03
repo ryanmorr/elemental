@@ -26,6 +26,10 @@ export function createHTMLTestElement(attrs = {}) {
     return element;
 }
 
+export function queryShadowRoot(selector) {
+    return container.querySelector(getTagName()).shadowRoot.querySelector(selector);
+}
+
 export function getStyle(el, prop) {
     return el.ownerDocument.defaultView.getComputedStyle(el).getPropertyValue(prop);
 }
