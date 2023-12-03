@@ -20,6 +20,10 @@ function createComponent(props, callback) {
 
         set css(value) {
             if (this.shadowRoot) {
+                if (value.nodeName) {
+                    this.shadowRoot.appendChild(value);
+                    return;
+                }
                 let sheet;
                 if (typeof value === 'string') {
                     sheet = new CSSStyleSheet();
@@ -61,7 +65,7 @@ function createComponent(props, callback) {
                 const result = callback.call(this, this);
                 if (result) {
                     if (typeof result === 'string') {
-                        shadow.innerHTML = result;
+                        shadow.innerHTML += result;
                     } else {
                         shadow.appendChild(result);
                     }

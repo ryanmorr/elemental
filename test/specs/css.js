@@ -96,4 +96,55 @@ describe('css', () => {
         expect(getStyle(element.shadowRoot.firstChild, 'width')).to.equal('44px');
         expect(getStyle(element.shadowRoot.firstChild, 'display')).to.equal('inline');
     });
+
+    it('should support CSS as a style element', () => {
+        elementize(generateTagName(), (element) => {
+            const style = document.createElement('style');
+            style.textContent = `
+                div {
+                    width: 51px;
+                }
+            `;
+
+            element.css = style;
+
+            return '<div></div>';
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('51px');
+    });
+
+    it('should append CSS as a style element', () => {
+        elementize(generateTagName(), (element) => {
+            const style1 = document.createElement('style');
+            style1.textContent = `
+                div {
+                    width: 51px;
+                }
+            `;
+
+            const style2 = document.createElement('style');
+            style2.textContent = `
+                div {
+                    display: inline-flex;
+                }
+            `;
+
+            element.css = style1;
+            element.css = style2;
+
+            return '<div></div>';
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(getStyle(element.shadowRoot.lastChild, 'width')).to.equal('51px');
+        expect(getStyle(element.shadowRoot.lastChild, 'display')).to.equal('inline-flex');
+    });
 });
