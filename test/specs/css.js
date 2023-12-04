@@ -65,6 +65,48 @@ describe('css', () => {
         expect(getStyle(container, 'width')).to.not.equal('51px');
     });
 
+    it('should support style element in the shadow root', () => {
+        elementize(generateTagName(), () => {
+            return `
+                <style>
+                div {
+                    width: 35px;
+                }
+                </style>
+                <div></div>
+            `;
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(getStyle(queryShadowRoot('div'), 'width')).to.equal('35px');
+        expect(getStyle(container, 'width')).to.not.equal('35px');
+    });
+
+    it('should not append style element to shadow root if assigned to css property', () => {
+        elementize(generateTagName(), (element) => {
+            const style = document.createElement('style');
+            style.textContent = `
+                div {
+                    width: 22px;
+                }
+            `;
+
+            element.css = style;
+
+            return '<div></div>';
+        });
+
+        const element = createTestElement();
+
+        container.appendChild(element);
+
+        expect(getStyle(queryShadowRoot('div'), 'width')).to.equal('22px');
+        expect(element.html.innerHTML).to.equal('<div></div>');
+    });
+
     it('should support CSS with an array of styles', () => {
         elementize(generateTagName(), (element) => {
             const string = `
