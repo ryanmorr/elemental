@@ -108,13 +108,15 @@ export function initializeProperties(element, props) {
 export function applyStyles(root, value) {
     if (Array.isArray(value)) {
         value.forEach((val) => applyStyles(root, val));
-    } else if (value && value.nodeName) {
-        root.appendChild(value);
-    } else if (typeof value === 'string') {
-        sheet = new CSSStyleSheet();
-        sheet.replaceSync(value);
-        applyStyles(root, sheet);
     } else {
+        if (value.nodeName) {
+            value = value.sheet || value.textContent;
+        }
+        if (typeof value === 'string') {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(value);
+            value = sheet;
+        }
         if (root.adoptedStyleSheets.length === 0) { 
             root.adoptedStyleSheets = [value];
         } else {

@@ -18,6 +18,19 @@ function createComponent(props, callback) {
             };
         }
 
+        get html() {
+            return this.shadowRoot;
+        }
+
+        set html(value) {
+            this.shadowRoot.replaceChildren();
+            if (typeof value === 'string') {
+                this.shadowRoot.innerHTML = value;
+            } else {
+                this.shadowRoot.appendChild(value);
+            }
+        }
+
         set css(value) {
             if (this.shadowRoot) {
                 applyStyles(this.shadowRoot, value);
@@ -50,7 +63,7 @@ function createComponent(props, callback) {
                 const result = callback.call(this, this);
                 if (result) {
                     if (typeof result === 'string') {
-                        shadow.innerHTML += result;
+                        shadow.innerHTML = result;
                     } else {
                         shadow.appendChild(result);
                     }

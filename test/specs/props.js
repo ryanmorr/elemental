@@ -1,4 +1,4 @@
-import { container, generateTagName, getTagName, createTestElement, createHTMLTestElement } from '../setup';
+import { container, generateTagName, createTestElement, createHTMLTestElement } from '../setup';
 import elementize from '../../src/elementize';
 
 describe('props', () => {
