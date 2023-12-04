@@ -330,6 +330,18 @@ describe('events', () => {
         element.foo = 'baz';
 
         expect(spy.callCount).to.equal(1);
+
+        element.foo = 'bar';
+
+        expect(spy.callCount).to.equal(2);
+
+        element.foo = 'bar';
+
+        expect(spy.callCount).to.equal(2);
+
+        element.foo = 'qux';
+
+        expect(spy.callCount).to.equal(3);
     });
 
     it('should support specific prop event subscription', () => {
