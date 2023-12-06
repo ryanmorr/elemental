@@ -2,11 +2,11 @@ import { container, generateTagName, createTestElement } from '../setup';
 import elementize from '../../src/elementize';
 
 describe('events', () => {
-    it('should support mount event subscription', () => {
+    it('should support mount event observers', () => {
         const spy = sinon.spy();
 
         elementize(generateTagName(), (element) => {
-            element.subscribe('mount', spy);
+            element.observe('mount', spy);
         });
 
         const element = createTestElement();
@@ -26,18 +26,18 @@ describe('events', () => {
         expect(spy.args[1][0]).to.equal(document.body);
     });
 
-    it('should support multiple mount event subscriptions', () => {
+    it('should support multiple mount event observers', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), (element) => {
-            element.subscribe('mount', spy1);
+            element.observe('mount', spy1);
         });
 
         const element = createTestElement();
 
-        expect(element.subscribe).to.be.a('function');
-        element.subscribe('mount', spy2);
+        expect(element.observe).to.be.a('function');
+        element.observe('mount', spy2);
 
         expect(spy1.callCount).to.equal(0);
         expect(spy2.callCount).to.equal(0);
@@ -59,18 +59,18 @@ describe('events', () => {
         expect(spy2.args[1][0]).to.equal(document.body);
     });
 
-    it('should support unsubscribing from a mount event subscription', () => {
-        let unsubscribe;
+    it('should support removing a mount event observer', () => {
+        let unobserve;
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), (element) => {
-            unsubscribe = element.subscribe('mount', spy1);
+            unobserve = element.observe('mount', spy1);
         });
 
         const element = createTestElement();
 
-        element.subscribe('mount', spy2);
+        element.observe('mount', spy2);
 
         document.body.appendChild(element);
 
@@ -79,8 +79,8 @@ describe('events', () => {
 
         element.remove();
 
-        expect(unsubscribe).to.be.a('function');
-        unsubscribe();
+        expect(unobserve).to.be.a('function');
+        unobserve();
 
         container.appendChild(element);
 
@@ -88,11 +88,11 @@ describe('events', () => {
         expect(spy2.callCount).to.equal(2);
     });
 
-    it('should support unmount event subscription', () => {
+    it('should support unmount event observer', () => {
         const spy = sinon.spy();
 
         elementize(generateTagName(), (element) => {
-            element.subscribe('unmount', spy);
+            element.observe('unmount', spy);
         });
 
         const element = createTestElement();
@@ -112,17 +112,17 @@ describe('events', () => {
         expect(spy.callCount).to.equal(2);
     });
 
-    it('should support multiple mount event subscriptions', () => {
+    it('should support multiple mount event observers', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), (element) => {
-            element.subscribe('unmount', spy1);
+            element.observe('unmount', spy1);
         });
 
         const element = createTestElement();
 
-        element.subscribe('unmount', spy2);
+        element.observe('unmount', spy2);
 
         document.body.appendChild(element);
 
@@ -142,18 +142,18 @@ describe('events', () => {
         expect(spy2.callCount).to.equal(2);
     });
 
-    it('should support unsubscribing from a mount event subscription', () => {
-        let unsubscribe;
+    it('should support removing a mount event observer', () => {
+        let unobserve;
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), (element) => {
-            element.subscribe('unmount', spy1);
+            element.observe('unmount', spy1);
         });
 
         const element = createTestElement();
         
-        unsubscribe = element.subscribe('unmount', spy2);
+        unobserve = element.observe('unmount', spy2);
 
         document.body.appendChild(element);
 
@@ -164,8 +164,8 @@ describe('events', () => {
 
         container.appendChild(element);
 
-        expect(unsubscribe).to.be.a('function');
-        unsubscribe();
+        expect(unobserve).to.be.a('function');
+        unobserve();
 
         element.remove();
 
@@ -173,11 +173,11 @@ describe('events', () => {
         expect(spy2.callCount).to.equal(1);
     });
 
-    it('should support prop event subscription', () => {
+    it('should support prop event observer', () => {
         const spy = sinon.spy();
 
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('prop', spy);
+            element.observe('prop', spy);
         });
 
         const element = createTestElement();
@@ -202,18 +202,18 @@ describe('events', () => {
         expect(spy.args[1][2]).to.equal('baz');
     });
 
-    it('should support multiple prop event subscriptions', () => {
+    it('should support multiple prop event observers', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('prop', spy1);
+            element.observe('prop', spy1);
         });
 
         const element = createTestElement();
         container.appendChild(element);
 
-        element.subscribe('prop', spy2);
+        element.observe('prop', spy2);
 
         expect(spy1.callCount).to.equal(0);
         expect(spy2.callCount).to.equal(0);
@@ -243,19 +243,19 @@ describe('events', () => {
         expect(spy2.args[1][2]).to.equal('baz');
     });
 
-    it('should support unsubscribing from a prop event subscription', () => {
-        let unsubscribe;
+    it('should support removing a prop event observer', () => {
+        let unobserve;
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('prop', spy1);
+            element.observe('prop', spy1);
         });
 
         const element = createTestElement();
         container.appendChild(element);
         
-        unsubscribe = element.subscribe('prop', spy2);
+        unobserve = element.observe('prop', spy2);
 
         element.foo = 'baz';
 
@@ -269,8 +269,8 @@ describe('events', () => {
         expect(spy2.args[0][1]).to.equal('baz');
         expect(spy2.args[0][2]).to.equal('bar');
 
-        expect(unsubscribe).to.be.a('function');
-        unsubscribe();
+        expect(unobserve).to.be.a('function');
+        unobserve();
 
         element.foo = 'qux';
 
@@ -285,7 +285,7 @@ describe('events', () => {
     it('should dispatch prop event if a property is changed within the constructor function', (done) => {
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
-            element.subscribe('prop', spy);
+            element.observe('prop', spy);
 
             expect(spy.callCount).to.equal(0);
 
@@ -319,7 +319,7 @@ describe('events', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -344,7 +344,7 @@ describe('events', () => {
         expect(spy.callCount).to.equal(3);
     });
 
-    it('should support specific prop event subscription', () => {
+    it('should support specific prop event observer', () => {
         elementize(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
 
         const element = createTestElement();
@@ -352,8 +352,8 @@ describe('events', () => {
 
         const fooSpy = sinon.spy();
         const barSpy = sinon.spy();
-        element.subscribe('prop:foo', fooSpy);
-        element.subscribe('prop:bar', barSpy);
+        element.observe('prop:foo', fooSpy);
+        element.observe('prop:bar', barSpy);
 
         expect(fooSpy.callCount).to.equal(0);
         expect(barSpy.callCount).to.equal(0);
@@ -373,11 +373,11 @@ describe('events', () => {
         expect(fooSpy.callCount).to.equal(1);
     });
 
-    it('should support attr event subscription', () => {
+    it('should support attr event observer', () => {
         const spy = sinon.spy();
     
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('attr', spy);
+            element.observe('attr', spy);
         });
     
         const element = createTestElement();
@@ -402,18 +402,18 @@ describe('events', () => {
         expect(spy.args[1][2]).to.equal('baz');
     });
     
-    it('should support multiple prop event subscriptions', () => {
+    it('should support multiple prop event observers', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('attr', spy1);
+            element.observe('attr', spy1);
         });
     
         const element = createTestElement();
         container.appendChild(element);
     
-        element.subscribe('attr', spy2);
+        element.observe('attr', spy2);
     
         expect(spy1.callCount).to.equal(0);
         expect(spy2.callCount).to.equal(0);
@@ -443,19 +443,19 @@ describe('events', () => {
         expect(spy2.args[1][2]).to.equal('baz');
     });
     
-    it('should support unsubscribing from a prop event subscription', () => {
-        let unsubscribe;
+    it('should support removing a prop event observer', () => {
+        let unobserve;
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
-            element.subscribe('attr', spy1);
+            element.observe('attr', spy1);
         });
     
         const element = createTestElement();
         container.appendChild(element);
         
-        unsubscribe = element.subscribe('attr', spy2);
+        unobserve = element.observe('attr', spy2);
     
         element.setAttribute('foo', 'baz');
     
@@ -469,8 +469,8 @@ describe('events', () => {
         expect(spy2.args[0][1]).to.equal('baz');
         expect(spy2.args[0][2]).to.equal('bar');
     
-        expect(unsubscribe).to.be.a('function');
-        unsubscribe();
+        expect(unobserve).to.be.a('function');
+        unobserve();
     
         element.setAttribute('foo', 'qux');
     
@@ -485,7 +485,7 @@ describe('events', () => {
     it('should dispatch attr event if an attribute is changed within the constructor function', (done) => {    
         elementize(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
-            element.subscribe('attr', spy);
+            element.observe('attr', spy);
 
             expect(spy.callCount).to.equal(0);
     
@@ -519,7 +519,7 @@ describe('events', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('attr', spy);
+        element.observe('attr', spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -532,7 +532,7 @@ describe('events', () => {
         expect(spy.callCount).to.equal(1);
     });
 
-    it('should support specific prop event subscription', () => {
+    it('should support specific prop event observer', () => {
         elementize(generateTagName(), {foo: 'a', bar: '1'}, () => 'foo');
 
         const element = createTestElement();
@@ -540,8 +540,8 @@ describe('events', () => {
 
         const fooSpy = sinon.spy();
         const barSpy = sinon.spy();
-        element.subscribe('attr:foo', fooSpy);
-        element.subscribe('attr:bar', barSpy);
+        element.observe('attr:foo', fooSpy);
+        element.observe('attr:bar', barSpy);
 
         expect(fooSpy.callCount).to.equal(0);
         expect(barSpy.callCount).to.equal(0);

@@ -182,7 +182,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(element.foo).to.equal('bar');
         expect(spy.callCount).to.equal(0);
@@ -203,7 +203,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -223,7 +223,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(element.fooBarBaz).to.equal('a');
         expect(spy.callCount).to.equal(0);
@@ -244,7 +244,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('attr', spy);
+        element.observe('attr', spy);
 
         expect(element.getAttribute('foo')).to.equal('baz');
         expect(spy.callCount).to.equal(0);
@@ -295,7 +295,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(element.foo).to.equal(null);
         expect(element.bar).to.equal(null);
@@ -325,7 +325,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(element.foo).to.equal(null);
         expect(spy.callCount).to.equal(0);
@@ -346,7 +346,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('prop', spy);
+        element.observe('prop', spy);
 
         expect(element.foo).to.equal(null);
         expect(element.bar).to.equal(null);
@@ -376,7 +376,7 @@ describe('props', () => {
         container.appendChild(element);
 
         const spy = sinon.spy();
-        element.subscribe('attr', spy);
+        element.observe('attr', spy);
 
         expect(spy.callCount).to.equal(0);
 

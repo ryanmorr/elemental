@@ -97,7 +97,7 @@ export function initializeProperties(element, props) {
                 if (oldVal === newVal) {
                     return;
                 }
-                callStack(element._subscribers.prop, (callback) => callback(prop, newVal, oldVal));
+                callStack(element._observers.prop, (callback) => callback(prop, newVal, oldVal));
             },
             enumerable: true,
             configurable: true

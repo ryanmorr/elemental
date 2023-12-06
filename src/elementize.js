@@ -10,7 +10,7 @@ function createComponent(props, callback) {
         constructor() {
             super();
             this._initialized = false;
-            this._subscribers = {
+            this._observers = {
                 mount: [],
                 unmount: [],
                 prop: [],
@@ -37,19 +37,19 @@ function createComponent(props, callback) {
             }
         }
 
-        subscribe(name, callback) {
+        observe(name, callback) {
             if (name.includes(':')) {
                 const parts = name.split(':');
                 name = parts[0];
                 callback = getCallback(parts[1], callback);
             }
-            const subscribers = this._subscribers[name];
-            if (subscribers) {
-                subscribers.push(callback);
+            const observers = this._observers[name];
+            if (observers) {
+                observers.push(callback);
                 return () => {
-                    const index = subscribers.indexOf(callback);
+                    const index = observers.indexOf(callback);
                     if (index !== -1) {
-                        subscribers.splice(index, 1);
+                        observers.splice(index, 1);
                     }
                 };
             }
@@ -70,11 +70,11 @@ function createComponent(props, callback) {
                 }
             }
             const parent = this.parentElement;
-            callStack(this._subscribers.mount, (callback) => callback(parent));
+            callStack(this._observers.mount, (callback) => callback(parent));
         }
 
         disconnectedCallback() {
-            callStack(this._subscribers.unmount, (callback) => callback());
+            callStack(this._observers.unmount, (callback) => callback());
         }
 
         attributeChangedCallback(attr, oldVal, newVal) {
@@ -86,7 +86,7 @@ function createComponent(props, callback) {
             }
             const prop = toProperty(attr);
             this[prop] = parseAttributeValue(newVal);
-            callStack(this._subscribers.attr, (callback) => callback(attr, newVal, oldVal));
+            callStack(this._observers.attr, (callback) => callback(attr, newVal, oldVal));
         }
     };
 }
