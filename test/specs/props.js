@@ -1,9 +1,9 @@
 import { container, generateTagName, createTestElement, createHTMLTestElement } from '../setup';
-import elementize from '../../src/elementize';
+import elemental from '../../src/elemental';
 
 describe('props', () => {
     it('should support default properties definition', () => {
-        elementize(generateTagName(), {foo: 'bar', baz: 10}, (element) => {
+        elemental(generateTagName(), {foo: 'bar', baz: 10}, (element) => {
             expect(element.foo).to.equal('bar');
             expect(element.baz).to.equal(10);
         });
@@ -30,7 +30,7 @@ describe('props', () => {
     });
 
     it('should enumerate properties', () => {
-        elementize(generateTagName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
+        elemental(generateTagName(), {foo: 1, bar: 2, baz: 3, qux: 4}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -44,7 +44,7 @@ describe('props', () => {
     });
 
     it('should be able to delete a property', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -55,7 +55,7 @@ describe('props', () => {
     });
 
     it('should update multiple properties', () => {
-        elementize(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
+        elemental(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
 
         const element = createTestElement();
 
@@ -79,7 +79,7 @@ describe('props', () => {
     });
 
     it('should clone default properties for each element instance', () => {
-        elementize(generateTagName(), {foo: [1, 2, 3]}, () => 'foo');
+        elemental(generateTagName(), {foo: [1, 2, 3]}, () => 'foo');
 
         const element1 = createTestElement();
         const element2 = createTestElement();
@@ -94,7 +94,7 @@ describe('props', () => {
     });
 
     it('should reflect default properties to attributes', () => {
-        elementize(generateTagName(), {foo: true, bar: 123, baz: 'abc'}, (element) => {
+        elemental(generateTagName(), {foo: true, bar: 123, baz: 'abc'}, (element) => {
             expect(element.getAttribute('foo')).to.equal('');
             expect(element.getAttribute('bar')).to.equal('123');
             expect(element.getAttribute('baz')).to.equal('abc');
@@ -109,7 +109,7 @@ describe('props', () => {
     });
 
     it('should reflect falsy default properties to attributes', () => {
-        elementize(generateTagName(), {foo: '', bar: 0}, (element) => {
+        elemental(generateTagName(), {foo: '', bar: 0}, (element) => {
             expect(element.getAttribute('foo')).to.equal('');
             expect(element.getAttribute('bar')).to.equal('0');
         });
@@ -122,7 +122,7 @@ describe('props', () => {
     });
 
     it('should not reflect default properties to attributes if the value is a non-primitive', () => {
-        elementize(generateTagName(), {foo: [], bar: {}, baz: null}, (element) => {
+        elemental(generateTagName(), {foo: [], bar: {}, baz: null}, (element) => {
             expect(element.hasAttribute('foo')).to.equal(false);
             expect(element.hasAttribute('bar')).to.equal(false);
             expect(element.hasAttribute('baz')).to.equal(false);
@@ -137,7 +137,7 @@ describe('props', () => {
     });
 
     it('should not reflect default properties to attributes if the value is boolean false', () => {
-        elementize(generateTagName(), {foo: false}, (element) => {
+        elemental(generateTagName(), {foo: false}, (element) => {
             expect(element.hasAttribute('foo')).to.equal(false);
         });
     
@@ -148,7 +148,7 @@ describe('props', () => {
     });
 
     it('should override default property value if attribute exists', () => {
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             expect(element.foo).to.equal('baz');
             expect(element.getAttribute('foo')).to.equal('baz');
         });
@@ -165,7 +165,7 @@ describe('props', () => {
     });
 
     it('should convert a camel-cased property name into a kebab-case attribute name', () => {
-        elementize(generateTagName(), {fooBarBaz: 'a'}, (element) => {
+        elemental(generateTagName(), {fooBarBaz: 'a'}, (element) => {
             expect(element.getAttribute('foo-bar-baz')).to.equal('a');
         });
     
@@ -176,7 +176,7 @@ describe('props', () => {
     });
 
     it('should reflect attributes to properties on change', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -197,7 +197,7 @@ describe('props', () => {
     });
 
     it('should set a property to null if the reflected attribute was removed', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -217,7 +217,7 @@ describe('props', () => {
     });
 
     it('should reflect kebab-case attributes to camel-case properties on change', () => {
-        elementize(generateTagName(), {fooBarBaz: 'a'}, () => 'foo');
+        elemental(generateTagName(), {fooBarBaz: 'a'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -238,7 +238,7 @@ describe('props', () => {
     }); 
 
     it('should not reflect properties to attributes on change', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createHTMLTestElement({foo: 'baz'});
         container.appendChild(element);
@@ -256,7 +256,7 @@ describe('props', () => {
     });
 
     it('should parse a JSON string when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createHTMLTestElement({
             foo: JSON.stringify({a: 1, b: 2, c: 3}),
@@ -270,7 +270,7 @@ describe('props', () => {
     });
 
     it('should convert an empty string to a boolean true when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTagName(), {foo: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null}, () => 'foo');
 
         const element = createHTMLTestElement({foo: ''});
         container.appendChild(element);
@@ -279,7 +279,7 @@ describe('props', () => {
     });
 
     it('should convert a numeric string to a number when reflecting an attribute to a property on initialization', () => {
-        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createHTMLTestElement({foo: '22', bar: '75.29'});
         container.appendChild(element);
@@ -289,7 +289,7 @@ describe('props', () => {
     });
 
     it('should parse a JSON string when reflecting an attribute to a property on change', () => {
-        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -319,7 +319,7 @@ describe('props', () => {
     });
 
     it('should convert an empty string to a boolean true when reflecting an attribute to a property on change', () => {
-        elementize(generateTagName(), {foo: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -340,7 +340,7 @@ describe('props', () => {
     });
 
     it('should convert a numeric string to a number when reflecting an attribute to a property on change', () => {
-        elementize(generateTagName(), {foo: null, bar: null}, () => 'foo');
+        elemental(generateTagName(), {foo: null, bar: null}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -370,7 +370,7 @@ describe('props', () => {
     });
 
     it('should not observe attributes if the reflected default properties are a non-primitive', () => {
-        elementize(generateTagName(), {foo: []}, () => 'foo');
+        elemental(generateTagName(), {foo: []}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);

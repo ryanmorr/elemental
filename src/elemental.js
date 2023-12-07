@@ -91,7 +91,7 @@ function createComponent(props, callback) {
     };
 }
 
-export default function elementize(name, props, callback) {
+export default function elemental(name, props, callback) {
     if (typeof props === 'function') {
         callback = props;
         props = {};

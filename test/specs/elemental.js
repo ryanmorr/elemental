@@ -1,11 +1,11 @@
 import { container, generateTagName, getTagName, createTestElement } from '../setup';
-import elementize from '../../src/elementize';
+import elemental from '../../src/elemental';
 
-describe('elementize', () => {
+describe('elemental', () => {
     it('should register and create a custom element', () => {
         const spy = sinon.spy();
 
-        const CustomElement = elementize(generateTagName(), {}, spy);
+        const CustomElement = elemental(generateTagName(), {}, spy);
 
         expect(CustomElement).to.be.a('function');
         expect(spy.callCount).to.equal(0);
@@ -33,7 +33,7 @@ describe('elementize', () => {
     it('should not invoke the initialization function twice', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {}, spy);
+        elemental(generateTagName(), {}, spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -53,7 +53,7 @@ describe('elementize', () => {
     it('should support optional default properties', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), spy);
+        elemental(generateTagName(), spy);
 
         expect(spy.callCount).to.equal(0);
 
@@ -66,7 +66,7 @@ describe('elementize', () => {
     }); 
 
     it('should support returning shadow content as a DOM node', () => {
-        elementize(generateTagName(), () => {
+        elemental(generateTagName(), () => {
             return document.createTextNode('foo');
         });
 
@@ -78,7 +78,7 @@ describe('elementize', () => {
     });
 
     it('should support returning shadow content as a string', () => {
-        elementize(generateTagName(), () => {
+        elemental(generateTagName(), () => {
             return 'foo';
         });
 
@@ -90,7 +90,7 @@ describe('elementize', () => {
     });
 
     it('should support returning shadow content as an HTML string', () => {
-        elementize(generateTagName(), () => {
+        elemental(generateTagName(), () => {
             return '<div>foo</div>';
         });
 

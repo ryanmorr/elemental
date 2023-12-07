@@ -1,9 +1,9 @@
 import { container, generateTagName, createTestElement } from '../setup';
-import elementize from '../../src/elementize';
+import elemental from '../../src/elemental';
 
 describe('html', () => {
     it('should return shadow root', () => {
-        elementize(generateTagName(), () => {
+        elemental(generateTagName(), () => {
             return '<div></div>';
         });
 
@@ -16,7 +16,7 @@ describe('html', () => {
     });
 
     it('should set shadow root content with an HTML string', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.html = '<span></span>';
         });
 
@@ -28,7 +28,7 @@ describe('html', () => {
     });
 
     it('should set shadow root content with a DOM node', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.html = document.createElement('section');
         });
 
@@ -40,7 +40,7 @@ describe('html', () => {
     });
 
     it('should clear previous HTML when setting content', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.html = '<em></em>';
 
             expect(element.html.innerHTML).to.equal('<em></em>');

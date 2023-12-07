@@ -1,11 +1,11 @@
 import { container, generateTagName, createTestElement } from '../setup';
-import elementize from '../../src/elementize';
+import elemental from '../../src/elemental';
 
 describe('events', () => {
     it('should support mount event observers', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.observe('mount', spy);
         });
 
@@ -30,7 +30,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.observe('mount', spy1);
         });
 
@@ -64,7 +64,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             unobserve = element.observe('mount', spy1);
         });
 
@@ -91,7 +91,7 @@ describe('events', () => {
     it('should support unmount event observer', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.observe('unmount', spy);
         });
 
@@ -116,7 +116,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.observe('unmount', spy1);
         });
 
@@ -147,7 +147,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.observe('unmount', spy1);
         });
 
@@ -176,7 +176,7 @@ describe('events', () => {
     it('should support prop event observer', () => {
         const spy = sinon.spy();
 
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('prop', spy);
         });
 
@@ -206,7 +206,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('prop', spy1);
         });
 
@@ -248,7 +248,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('prop', spy1);
         });
 
@@ -283,7 +283,7 @@ describe('events', () => {
     });
 
     it('should dispatch prop event if a property is changed within the constructor function', (done) => {
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
             element.observe('prop', spy);
 
@@ -313,7 +313,7 @@ describe('events', () => {
     });
 
     it('should not dispatch prop event if the value is the same', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -345,7 +345,7 @@ describe('events', () => {
     });
 
     it('should support specific prop event observer', () => {
-        elementize(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
+        elemental(generateTagName(), {foo: 'a', bar: 1}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -376,7 +376,7 @@ describe('events', () => {
     it('should support attr event observer', () => {
         const spy = sinon.spy();
     
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('attr', spy);
         });
     
@@ -406,7 +406,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('attr', spy1);
         });
     
@@ -448,7 +448,7 @@ describe('events', () => {
         const spy1 = sinon.spy();
         const spy2 = sinon.spy();
         
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             element.observe('attr', spy1);
         });
     
@@ -483,7 +483,7 @@ describe('events', () => {
     });
 
     it('should dispatch attr event if an attribute is changed within the constructor function', (done) => {    
-        elementize(generateTagName(), {foo: 'bar'}, (element) => {
+        elemental(generateTagName(), {foo: 'bar'}, (element) => {
             const spy = sinon.spy();
             element.observe('attr', spy);
 
@@ -513,7 +513,7 @@ describe('events', () => {
     });
 
     it('should not dispatch attr event if the value is the same', () => {
-        elementize(generateTagName(), {foo: 'bar'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'bar'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);
@@ -533,7 +533,7 @@ describe('events', () => {
     });
 
     it('should support specific prop event observer', () => {
-        elementize(generateTagName(), {foo: 'a', bar: '1'}, () => 'foo');
+        elemental(generateTagName(), {foo: 'a', bar: '1'}, () => 'foo');
 
         const element = createTestElement();
         container.appendChild(element);

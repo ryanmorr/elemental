@@ -1,12 +1,12 @@
 {
-  "name": "@ryanmorr/elementize",
+  "name": "@ryanmorr/elemental",
   "description": "A functional approach to creating autonomous custom elements",
   "version": "0.1.0",
   "license": "Unlicense",
   "author": "Ryan Morr",
-  "homepage": "https://github.com/ryanmorr/elementize",
-  "repository": "github:ryanmorr/elementize",
-  "bugs": "https://github.com/ryanmorr/elementize/issues",
+  "homepage": "https://github.com/ryanmorr/elemental",
+  "repository": "github:ryanmorr/elemental",
+  "bugs": "https://github.com/ryanmorr/elemental/issues",
   "keywords": [
     "javascript",
     "ui",
@@ -16,14 +16,14 @@
     "dom"
   ],
   "type": "module",
-  "main": "dist/cjs/elementize.js",
-  "module": "dist/esm/elementize.js",
-  "browser": "dist/umd/elementize.js",
+  "main": "dist/cjs/elemental.js",
+  "module": "dist/esm/elemental.js",
+  "browser": "dist/umd/elemental.js",
   "exports": {
     ".": {
-      "browser": "./dist/umd/elementize.js",
-      "import": "./dist/esm/elementize.js",
-      "require": "./dist/cjs/elementize.js"
+      "browser": "./dist/umd/elemental.js",
+      "import": "./dist/esm/elemental.js",
+      "require": "./dist/cjs/elemental.js"
     }
   },
   "files": [

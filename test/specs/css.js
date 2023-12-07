@@ -1,9 +1,9 @@
 import { container, generateTagName, createTestElement, queryShadowRoot, getStyle } from '../setup';
-import elementize from '../../src/elementize';
+import elemental from '../../src/elemental';
 
 describe('css', () => {
     it('should support scoped CSS as a string', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.css = `
                 div {
                     width: 14px;
@@ -22,7 +22,7 @@ describe('css', () => {
     });
 
     it('should support CSS as a sheet', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             const sheet = new CSSStyleSheet();
             sheet.replaceSync(`
                 div {
@@ -44,7 +44,7 @@ describe('css', () => {
     });
 
     it('should support CSS as a style element', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             const style = document.createElement('style');
             style.textContent = `
                 div {
@@ -66,7 +66,7 @@ describe('css', () => {
     });
 
     it('should support style element in the shadow root', () => {
-        elementize(generateTagName(), () => {
+        elemental(generateTagName(), () => {
             return `
                 <style>
                 div {
@@ -86,7 +86,7 @@ describe('css', () => {
     });
 
     it('should not append style element to shadow root if assigned to css property', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             const style = document.createElement('style');
             style.textContent = `
                 div {
@@ -108,7 +108,7 @@ describe('css', () => {
     });
 
     it('should support CSS with an array of styles', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             const string = `
                 div {
                     width: 27px;
@@ -145,7 +145,7 @@ describe('css', () => {
     });
 
     it('should append and not overwrite CSS with each assignment', () => {
-        elementize(generateTagName(), (element) => {
+        elemental(generateTagName(), (element) => {
             element.css = `
                 div {
                     width: 55px;
