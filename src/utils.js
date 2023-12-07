@@ -117,10 +117,6 @@ export function applyStyles(root, value) {
             sheet.replaceSync(value);
             value = sheet;
         }
-        if (root.adoptedStyleSheets.length === 0) { 
-            root.adoptedStyleSheets = [value];
-        } else {
-            root.adoptedStyleSheets.push(value);
-        }
+        root.adoptedStyleSheets.push(value);
     }
 }
